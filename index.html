@@ -1,31 +1,840 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Rafael Caballero Roldán</title>
-	</head>
-	<body>
-		<nav>
-    		<ul>
-        		<li><a href="/">Contact</a></li>
-	        	<li><a href="/research">Research</a></li>
-        		<li><a href="/raw">Teaching</a></li>
-        		<li><a href="/books">Books</a></li>
-        		<li><a href="/astronomy">Astronomy</a></li>
-    		</ul>
-		</nav>
-		<div class="container">
-    		<div class="blurb">
-        		<h1>Purpose of this page</h1>
-				<p>This page  contains  <a href="/raw">tweets</a> correspoding to the USA presidential elections of 2016. It also describes 
-           the <a href="/workflow">workflow</a> used to clean and prepare this data.</p>
-           
-    		</div><!-- /.blurb -->
-		</div><!-- /.container -->
-		<footer>
-    		<ul>
-        		<li><a href="mailto:rafacr@ucm.es">email</a></li>
-        		<li><a href="https://gpd.sip.ucm.es/rafa">my web page</a></li>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<meta name="author" content="rafacr,Rafael Caballero, Rafael Caballero Roldán, Rafael Caballero homepage">
+	<title>Rafael Caballero</title>
+	<link type="text/css" href="rafacr/jquery-ui-1.css" rel="stylesheet">	
+	<script type="text/javascript" src="rafacr/jquery-1.js"></script>
+	<script type="text/javascript" src="rafacr/jquery-ui-1.js"></script>
+		<script type="text/javascript">
+			$(function(){
+	
+				// Tabs
+				$('#tabs').tabs();
+				
+				
+			});
+		</script>
+		<style type="text/css">
+			/*demo page css*/
+			a{ text-decoration: none; color:#006666; }
+			body{ background: #fffff6; font-size: 100%; font-family: "Trebuchet MS", "Lucida sans", Arial; margin: 30px; width: 1024px; }
+			/* h1{ border-bottom: solid black 1px; font-weight: 400; } */
+			h1{ font-weight: 400; font-size: x-large; margin-bottom: -10px;}
+			h3{ background: #aaf6f6;; font-weight: 400; margin-top: 2em;}
+			h4{ font-weight:400; text-decoration: underline;}
+			#header{ height: 200px; background: #aaf6f6; }
+			#foto{ float: left; height: 176px; margin-top:.5em; }
+			#fotog{ height: 87%; }
+			#cabe-derecha{ padding-left: 20em; }
+			#affiliation{ height: 237px; padding-left: 235px; padding-top: 100px; }
+			#cuerpo{  margin-top: 3%; background: #aaf6f6; }
+			#tabs-1{  background: #aaf6f6; }
+			#tabs-2{  background: #aaf6f6; }
+			#tabs-3{  background: #aaf6f6; }
+			#tabs-4{  background: #aaf6f6; }
+			#tabs-5{  background: #aaf6f6; }
+			.title{ color: #990000; }
+			.titulo1{ display: block; font-size: 220%; color: brown; margin-bottom: .5em; }
+			.titulo2{ display: block; font-size: 120%; margin-bottom: .25em; }
+			.titulo3 { margin-top: 1em; display: block; font-size: 120%; font-style: italic; }
+			.titulo4{ font-size: 100%; text-decoration: underline; }
+			.cuadrado{ float: left; width: 350px; margin: 10px; }
+			.flotante2{ float: left; width: 350px; margin: 10px; }
+			.noitems{ list-style-type: circle; }
+                        .alert { color:red; }
+		</style>	
+		
+</head>
+<body>
+		<div class="ui-widget">
+			<div id="header" class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .9em;">
+				<div id="foto">
+				<img id="fotog" src="rafacr/foto.jpg">
+				</div>
+				<div id="cabe-derecha">
+				<br>
+				<h1>Rafael Caballero</h1>
+				<hr>
+				<ul class="noitems">	
+					Associated Professor (Profesor Titular)<br>
+					<a  href="http:gpd.sip.ucm.es">GPD</a>
+ 			        	research group , <br>
+         			<a  href="http://informatica.ucm.es">Facultad de Informática</a><br>
+
+         			<a  href="http://www.ucm.es">Universidad Complutense de Madrid</a>
+         			</li>
+				</ul>
+				</div>
+			</div>
+		</div>
+		
+		
+<div id="cuerpo">
+
+		<!-- Tabs -->
+		<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+				<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-1">Contact</a></li>
+				<li class="ui-state-default ui-corner-top"><a href="#tabs-2">Research</a></li>
+				<li class="ui-state-default ui-corner-top"><a href="#tabs-3">Teaching</a></li>
+				<li class="ui-state-default ui-corner-top"><a href="#tabs-4">Books</a></li>
+				<li class="ui-state-default ui-corner-top"><a href="#tabs-5">Astronomy</a></li>
+				<!--<li class="ui-state-default ui-corner-top"><a href="#tabs-6">Systems</a></li>-->
 			</ul>
-		</footer>
-	</body>
-</html>
+			<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+			
+	<!--			<h3>Contact</h3>-->
+				<form>
+					<!--<fieldset class="cuadrado">-->
+						<b>Postal address</b><br>
+						Rafael Caballero <br>
+						Dpto. Sistemas Informáticos y Programación.<br>
+						Universidad Complutense de Madrid<br>
+						Calle Prof. José García Santesmases, s/n.<br>
+						28040 Madrid, Spain<br><br><br><br>
+						<b>Office</b><br>
+						Room 345 - Facultad de Informática - UCM<br>
+						<br>
+						Phone: +34-913 947 553<br>
+						email: <a href="mailto:rafacr@ucm,,es" style="font-size:100%">rafacr@ucm.es</a>
+					
+				</form>
+				</div>
+				
+			<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">
+				<!-- <h3>Research</h3> -->
+				<h3>2021<br></h3>
+				<ul>
+				<li><font color="#af4000"><b>A unified framework for declarative debugging and testing</b></font> 
+				(<a href="http://gpd.sip.ucm.es/rafa/papers/infosoft20.bib">BibTex</a>).
+				(<a href="https://www.sciencedirect.com/science/article/pii/S0950584920301853">PDF</a>)<br>
+				Rafael Caballero, Enrique Martín-Martín, Adrián Riesco, Salvador Tamarit (2021)<br>
+				Information and Software Technology, vol. 129, January 2021. 
+				</li>
+				</ul>
+				<h3>2020<br></h3>
+				<ul>
+				
+				<li><font color="#af4000"><b>Predicting students’ knowledge after playing a serious game based on learning analytics data: A case study.</b></font> 
+				(<a href="http://gpd.sip.ucm.es/rafa/papers/jcal20.bib">BibTex</a>).
+				(<a href="https://pubman.e-ucm.es/drafts/e-UCM_draft_350.pdf">PDF</a>)<br>
+				Cristina Alonso-Fernández, Iván Martínez-Ortiz, Rafael Caballero, Manuel Freire, Baltasar Fernández-Manjón (2020)<br>
+				Journal of Computer Assisted Learning, vol. 36, no. 3, pp. 350-358, June 2020. [JCR 2018, Impact Factor: 2.451, Q1, 41/243 in Education & Educational Research]. DOI: 10.1111/jcal.12405.
+				</li>
+               </ul>
+				<h3>2019<br></h3>
+<ul>
+<li><font color="#af4000"><b>A core Erlang semantics for declarative debugging</b></font> (<a href="http://gpd.sip.ucm.es/rafa/papers/jlamp19.bib">BibTex</a>). <br>
+Rafael Caballero, Enrique Martín-Martín, Adrián Riesco, Salvador Tamarit. <br> 
+<a href="http://gpd.sip.ucm.es/rafa/papers/jlamp19.pdf">
+Journal of Logical and Algebraic Methods in Programming</a>. Volume 107 (2019), pages: 39.<br><br>  </li>
+</ul>
+                
+				<h3>2018<br>
+</h3>
+<ul>
+<li><font color="#af4000"><b>Short term cloud nowcasting for a solar power plant based on irradiance historical
+data</b></font> (<a href="http://gpd.sip.ucm.es/rafa/papers/jcst18.bib">BibTex</a>). <br>
+Rafael Caballero, Luis F. Zarzalejo, Álvaro Otero, Luis Piñuel,
+Stefan Wilbert. <br> 
+<a href="http://sedici.unlp.edu.ar/bitstream/handle/10915/71620/Documento_completo.pdf?sequence=1">
+Journal of Computer Science & Technology, Volume 18. Number
+3. pages: 7</a>. December 2018.<br><br>  </li>
+
+<li><font color="#af4000"><b>Declarative Debugging of Concurrent Erlang Programs</b></font>
+ <!-- (<a href="http://gpd.sip.ucm.es/rafa/papers/ijmi17.bib">BibTex</a>) -->
+  <br>
+Rafael Caballero, Enrique Martín-Martín, Adrián Riesco, Salvador Tamarit <br>
+ <a href="https://www.sciencedirect.com/science/article/pii/S235222081730216X">
+ Journal of Logical and Algebraic Methods in Programming</a>. Volume 101. Pages 22-41<br><br>
+</li>
+</ul>
+				<h3>2017<br>
+</h3>
+<ul>
+<li><font color="#af4000"><b>Anticipating Anonymity in Screening Program Databases</b></font>
+ (<a href="http://gpd.sip.ucm.es/rafa/papers/ijmi17.bib">BibTex</a>)
+  <br>
+Rafael Caballero, Sagar Sen,  Jan F Nygård<br>
+ <a href="https://doi.org/10.1016/j.ijmedinf.2017.04.003t">
+ International Journal of Medical Informatics</a>. Volume 103. Pages 20-31<br><br>
+</li>
+<li><font color="#af4000"><b>A Survey of Algorithmic Debugging</b></font>
+  <br>
+Rafael Caballero, Adrián Riesco, Josep Silva<br>
+ <a href="http://csur.acm.org/">
+ ACM Computing Surveys</a>. In press<br>
+</li>
+
+<br>
+
+</ul>
+				<h3>2016<br>
+</h3>
+<ul>
+
+<li><font color="#af4000"><b>Falsification of Java Assertions Using Automatic Test-Case Generators</b></font>
+  <!--(<a href="http://gpd.sip.ucm.es/rafa/papers/tap16.bib">BibTex</a>)-->
+  (<a href="https://www.google.es/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwivnZXGq_fRAhXJ0RoKHfR_AbEQFggcMAA&url=https%3A%2F%2Fthinkmind.org%2Fdownload.php%3Farticleid%3Dsysmea_v9_n34_2016_5&usg=AFQjCNFRu0GfFHO1ng4Q_QjqFfHOXMVuYw">PDF</a>)<br>
+Rafael Caballero,
+Manuel Montenegro, Herbert Kuchen,
+Vincent von Hof<br>
+ <a href="http://www.iariajournals.org/systems_and_measurements/tocv9n34.html">
+ International Journal On Advances in Systems and Measurements, volume 9, numbers 3 and 4, 2016 </a>. pp 177-187.<br><br>
+</li>
+
+<li><font color="#af4000"><b>Debugging Meets Testing in Erlang</b></font>
+  (<a href="http://gpd.sip.ucm.es/rafa/papers/tap16.bib">BibTex</a>)
+  (<a href="http://gpd.sip.ucm.es/rafa/papers/presentatap16.pdf">Slides</a>)<br>
+Salvador Tamarit, Adrián Riesco, Enrique Martin-Martin<br>
+ <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-41135-4_10">
+ 10th International Conference, TAP 2016</a>. 10 pages.<br>
+ Volume 9762 of the series Lecture Notes in Computer Science pp 171-180<br>
+</li>
+<br>
+</ul>
+<h3>2015<br>
+</h3>
+
+<ul>
+
+<li><font color="#af4000"><b>Automatic Falsification of Java Assertions</b></font><br>
+Rafael
+Caballero, Manuel Montenegro, Herbert Kuchen, Vincent Von Hof<br>
+ <a href="http://www.iaria.org/conferences2015/VALID15.html">
+ The Seventh International Conference on Advances in System Testing and Validation Lifecycle
+(VALID 2015)</a>. 6 pages.<br>
+<a href="http://www.iaria.org/conferences2015/awardsVALID15/valid2015_a1.pdf">Best paper award</a></li>
+<br>
+
+  <li><font color="#af4000"><b>Two type extensions for the constraint modeling language MiniZinc</b></font>
+       (<a href="http://gpd.sip.ucm.es/rafa/papers/scp15a.pdf">PDF (draft)</a>) (<a href="http://gpd.sip.ucm.es/rafa/papers/scp15a.bib">BibTex</a>)<br>
+Rafael
+Caballero, Peter Stuckey, Antonio Tenorio-Fornés<br>
+Science of Computer Programming.
+ <a href="http://www.sciencedirect.com/science/article/pii/S0167642315000805">.
+ Volume 111, Part 1, 1 November 2015, Pages 156–189</a>.</li>
+  <br>
+
+  <li><font color="#af4000"><b>Debugging of Wrong and Missing Answers for
+Datalog Programs with Constraint Handling Rules</b></font>   (<a href="http://dl.acm.org/citation.cfm?id=2790522">PDF</a>)
+(<a href="http://gpd.sip.ucm.es/rafa/papers/ppdp15.bib">BibTex</a>)<br>
+Rafael
+Caballero, Yolanda García-Ruiz, Fernando Sáenz-Pérez<br>
+ <a href="http://costa.ls.fi.upm.es/ppdp15/"> 17th International Symposium on
+Principles and Practice of Declarative Programming
+(PPDP 2015)</a>. 12 pages.
+Pages 55-66.<br>
+ACM ©2015. ISBN: 978-1-4503-3516-4</li>
+  <br>
+
+  <li><font color="#af4000"><b>Checking Java Assertions Using Automated
+Test-Case Generation</b></font>   (<a href="http://gpd.sip.ucm.es/rafa/papers/lopstr15.bib">BibTex</a>)<br>
+Rafael
+Caballero, Manuel Montenegro, Herbert Kuchen, Vincent Von Hof<br>
+ 25th International Symposium on
+Logic-Based Program Synthesis and Transformation
+(<a href="http://alpha.diism.unisi.it/lopstr15/">LOPSTR 2015</a>).<br>
+ <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-27436-2_13">
+Lecture Notes in Computer Science. Vol. 7927, pages 221-226</a> </li>
+  <br>
+
+
+  <li><font color="#af4000"><b>A Zoom-Declarative Debugger for Sequential Erlang Programs</b></font>   (<a href="http://dx.doi.org/10.1016/j.scico.2015.06.011">PDF</a>) (<a href="http://gpd.sip.ucm.es/rafa/papers/scp15b.bib">BibTex</a>)<br>
+Rafael
+Caballero, Enrique Martín-Martín, Salvador Tamarit and Adrián Riesco<br>
+Science of Computer Programming.
+<a href="http://www.sciencedirect.com/science/article/pii/S0167642315001343">Volume 110, 15 October 2015, Pages 104–118</a></li>
+  <br>
+
+<!--
+  <li><font color="#af4000"><b>Constraint Programming Meets SQL</b></font>  (<a href="papers/prole15.pdf"> PDF</a>)<br>
+Rafael
+Caballero and Carlo Ieva<br>
+<a href="http://www.istr.unican.es/sistedes2015/prole.html">XV Jornadas sobre Programación y Lenguajes (PROLE 2015)</a>. .</li>
+  <br>
+-->
+  <li><font color="#af4000"><b>A Declarative Debugger for Concurrent Erlang Programs</b></font>   (<!-- <a href="papers/lopstr15.pdf"> --> conference presentation <!-- </a> -->)<br>
+Rafael
+Caballero, Enrique Martín-Martín, Salvador Tamarit and Adrián Riesco<br>
+<a href="http://www.istr.unican.es/sistedes2015/prole.html">XV Jornadas sobre Programación y Lenguajes (PROLE 2015)</a>. .</li>
+  <br>
+
+</ul>
+
+
+<h3>2014<br>
+</h3>
+
+<ul>
+
+  <li><font color="#af4000"><b>Introducing EDD: A Declarative Debugger
+for Sequential Erlang Programs</b></font>  (<a href="http://gpd.sip.ucm.es/rafa/papers/tacas14.bib">BibTex</a>)<br>
+Rafael
+Caballero, Enrique Martín-Martín, Salvador Tamarit y Adrián Riesco<br>
+20th International Conference on Tools and Algorithms for the
+Construction and Analysis of Systems <a href="http://www.etaps.org/2014/tacas">TACAS 14</a>.</li>
+<a href="http://link.springer.com/chapter/10.1007%2F978-3-642-54862-8_49%22">Volume 8413 of the series Lecture Notes in Computer Science pp 581-586</a>.
+  <br>
+</ul>
+
+<h3>2013<br>
+</h3>
+
+<ul>
+
+  <li><font color="#af4000"><b>Finite Type Extensions in Constraint
+Programming</b></font>  <ahref="papers ppdp13.pdf="">(<a href="http://gpd.sip.ucm.es/rafa/papers/ppdp13.pdf">PDF</a>) <a href="http://gpd.sip.ucm.es/rafa/papers/ppdp13.txt">(BibTex)</a>&nbsp; <br>
+Rafael
+Caballero, Peter Stuckey, Antonio Tenorio-Fornés<br>
+15th Symposium on Principles and Practice of Declarative Programming <a href="http://users.ugent.be/%7Etschrijv/PPDP2013/">PPDP 13</a>.
+Pages 217-227.<br>
+ACM ©2013. ISBN: 978-1-4503-2154-9 </ahref="papers></li>
+  <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"><br>
+  </span>
+  <li><font color="#af4000"><b>A Declarative Debugger for Sequential
+Erlang Programs</b></font> <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"></span> <a href="http://gpd.sip.ucm.es/rafa/papers/tap13.txt">(BibTex)</a>&nbsp; <br>
+Rafael
+Caballero, Enrique Martín-Martín, Salvador Tamarit y Adrián Riesco<br>
+7th International Conference on
+Tests &amp; Proofs, <a href="http://www.spacios.eu/TAP2013/">TAP 13</a>
+    <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>Declarative debugging of rewriting logic
+specifications</b></font> <a href="http://ac.els-cdn.com/S1567832611000622/1-s2.0-S1567832611000622-main.pdf?_tid=758dfd72-3a14-11e2-a2f2-00000aab0f26&amp;acdnat=1354187212_c6398146e218f0fe74c7bf13b560dd6f">(PDF)</a>&nbsp;
+    <a href="http://gpd.sip.ucm.es/rafa/papers/jlap12.bib">(BibTex)</a>&nbsp; <br>
+    <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;">Adrián
+Riesco, Alberto Verdejo,&nbsp; Narciso Martí-Oliet,&nbsp;&nbsp; Rafael
+Caballero</span> <br>
+    <a href="http://www.journals.elsevier.com/the-journal-of-logic-and-algebraic-programming/">The
+Journal of Logic and Algebraic Programming</a> (JLAP). Elsevier. <span style="font-size: 10pt; font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;" lang="EN-US">ISSN 1567-8326</span></li>
+</ul>
+
+<h3>2012<br>
+</h3>
+
+<ul>
+
+  <li><font color="#af4000"><b>Test-Case Generation for SQL Nested
+Queries with Existential Conditions</b></font> <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"></span><a href="http://gpd.sip.ucm.es/rafa/papers/prole12.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/prole12.txt">(BibTex)</a>&nbsp;
+    <br>
+Rafael
+Caballero, José Luzón-Martín, Antonio Tenorio<br>
+XII Jornadas sobre Programaci\ón y Lenguajes, <a href="http://sistedes2012.ual.es/trabajos_prole_modalidad">PROLE 2012</a>
+(SISTEDES) </li>
+  <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"><br>
+  </span>
+  <li><font color="#af4000"><b>A Transformation-based Implementation
+for CLP with Qualification and Proximity</b></font> (<span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"></span><a href="http://journals.cambridge.org/action/displayAbstract?fromPage=online&amp;aid=8550106">Firstview,online</a>)
+    <a href="http://gpd.sip.ucm.es/rafa/papers/qlptplp.txt">(BibTex)</a>&nbsp; <br>
+Rafael
+Caballero, Mario Rodríguez-Artalejo and Carlos Romero-Díaz <br>
+    <a href="http://journals.cambridge.org/action/displayJournal?jid=TLP">Theory
+and Practice of Logic Programming</a> (TPLP). Cambridge University
+Press. <span style="font-size: 10pt; font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;" lang="EN-US">ISSN 1471-0684.</span></li>
+  <span style="font-family: &quot;Arial Narrow&quot;,&quot;sans-serif&quot;;"></span><br>
+  <li><font color="#af4000"><b>Declarative Debugging of Wrong and
+Missing Answers for SQL Views</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/flops12.txt">(BibTex)</a>&nbsp;
+    <br>
+R. Caballero, Y. García-Ruiz, F. Sáenz Pérez <br>
+Eleventh International Symposium on Functional and Logic Programming (<a href="http://www.org.kobe-u.ac.jp/flops2012/">FLOPS 2012 </a>)<br>
+    <a href="http://link.springer.com/chapter/10.1007%2F978-3-642-29822-6_9?LI=true">Lecture
+Notes in Computer Science</a>. Vol. 7294.</li>
+  <br>
+</ul>
+
+<h3>2011<br>
+</h3>
+
+<ul>
+
+  <li><font color="#af4000"><b>Simplifying Questions in Maude
+Declarative Debugger by Transforming Proof Trees&nbsp;</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/lopstr11a.txt">(BibTex)</a>&nbsp; <br>
+Rafael
+Caballero, Adrian Riesco, Alberto Verdejo and Narciso Marti-Oliet<br>
+21st International Symposium on Logic-Based Program Synthesis and
+Transformation (<a href="http://users.dsic.upv.es/%7Elopstr11/">LOPSTR
+2011</a>)<br>
+Lecture Notes in Computer Science. Vol. 7225, pages 73-89<br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>A Declarative Embedding of XQuery in a
+Functional-Logic Language</b></font>&nbsp; <a href="http://gpd.sip.ucm.es/rafa/papers/lopstr11b.txt">(BibTex)</a>&nbsp; <br>
+J.Almendros-Jiménez,
+R. Caballero, Y. García-Ruiz, F. Sáenz Pérez <br>
+21st International Symposium on Logic-Based Program Synthesis and
+Transformation (<a href="http://users.dsic.upv.es/%7Elopstr11/">LOPSTR
+2011</a>)<br>
+Lecture Notes in Computer Science. Vol. 7225, pages 42-56.<br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>XQuery in the Functional-Logic language
+Toy</b></font> (<a href="http://www.springerlink.com/content/y2u167p617821857/fulltext.pdf">PDF</a>)
+    <a href="http://gpd.sip.ucm.es/rafa/papers/wflp2011.txt">(BibTex)</a>&nbsp;<br>
+J.Almendros-Jiménez, R. Caballero, Y. García-Ruiz, F. Sáenz Pérez<br>
+20th International Workshop on Functional and (Constraint) Logic
+Programming (<a href="http://www.springer.com/computer/theoretical+computer+science/book/978-3-642-22530-7">WFLP
+2011</a>)<br>
+Lecture Notes in Computer Science, Vol 6186, pages 35-51.<br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>Algorithmic Debugging of SQL Views</b></font>&nbsp;
+(<a href="http://link.springer.com/chapter/10.1007%2F978-3-642-29709-0_9">PDF</a>)
+    <a href="http://gpd.sip.ucm.es/rafa/papers/psi11.txt">(BibTex)</a>&nbsp;
+R. Caballero, Y. García-Ruiz, F. Sáenz Pérez<br>
+Eighth International Andrei Ershov Memorial Conference Perspectives of
+Systems Informatics (<a href="http://psi.nsc.ru/psi11/index">PSI 2011</a>)<br>
+Lecture Notes in Computer Science, Vol 7162, pages 77-85. 2012.<br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>A program transformation for returning
+states in functional-logic programs</b></font> (<a href="http://portal.acm.org/citation.cfm?id=1929523">PDF</a>) <a href="http://gpd.sip.ucm.es/rafa/papers/pepm11.txt">(BibTex)</a>&nbsp;<br>
+R. Caballero<br>
+Proceedings of the 20th ACM SIGPLAN workshop on Partial evaluation and
+program manipulation (<a href="http://www.program-transformation.org/PEPM11">PEPM 2011</a>).
+Pages 111-120<br>
+ACM ©2011. ISBN: 978-1-4503-0485-6 </li>
+  <br>
+  <li><font color="#af4000"><b>Integrating XPath with the
+Functional-Logic Language Toy</b> </font>(<a href="http://www.springerlink.com/content/5036658kr8058452/">PDF</a>) <a href="http://gpd.sip.ucm.es/rafa/papers/padl11.txt">(BibTex)</a>&nbsp;<br>
+R. Caballero, Y. García-Ruiz and F. Sáenz-Pérez.<br>
+Proceedings of the Thirteenth International Symposium on Practical
+Aspects of Declarative Languages (<a href="http://www.dcc.fc.up.pt/PADL-2011/">PADL 2011</a>)<br>
+Lecture Notes in Computer Science, Volume 6539/2011, pages 145-159 </li>
+  <br>
+</ul>
+
+<h3>2004-2010<br>
+</h3>
+
+<ul>
+
+
+  <li><font color="#af4000"><b>Applying&nbsp;Constraint&nbsp;&nbsp;Logic&nbsp;Programming
+to&nbsp;SQL&nbsp;Test&nbsp;Case&nbsp;Generation. </b></font>(<a href="http://springerlink.com/content/511135875229p354/fulltext.pdf">PDF</a>)
+    <a href="http://gpd.sip.ucm.es/rafa/papers/flops2010.txt">(BibTex)</a>&nbsp;<br>
+R.
+Caballero, Y. García-Ruiz and F. Sáenz-Pérez.<br>
+In&nbsp;Matthias Blume and Germán Vidal, editors, Tenth
+International Symposium on Functional and Logic Programming (FLOPS 2010)<br>
+    <a href="http://www.springerlink.com/content/62148t18p4542h20/?p=4fe651853fbb4230ab901420948f17d3">Springer-Verlag
+LNCS</a>&nbsp;2010, Volume 6009,&nbsp; Pages 191-206</li>
+  <br>
+  <li><font color="#af4000"><b>Qualified
+Computations in Functional Logic Progamming. </b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/iclp09.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/iclp09.txt">(BibTex)</a>.<br>
+R. Caballero, M. Rodríguez-Artalejo and C. A. Romero-Díaz.<br>
+In P. Hill and D. Warren, editors, Logic Programming (ICLP’09)<br>
+    <a href="http://www.springerlink.com/content/62148t18p4542h20/?p=4fe651853fbb4230ab901420948f17d3">Springer-Verlag
+LNCS</a>&nbsp; volume <a href="http://www.springerlink.com/content/h05gu4882qg2/?p=a2a5cac92b374783a36295e7bf5e6ae3">5649</a>,
+pages 449-463. <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>Declarative
+debugging of rewriting logic specifications. </b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/wadt08.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wadt08.txt">(BibTex)</a>.<br>
+A. Riesco, A. Verdejo, R. Caballero, N. Martí-Oliet.<br>
+In Recent Trends in Algebraic Development Techniques (WADT
+2008).<br>
+    <a href="http://www.springerlink.com/content/087n2806n67825k5/?p=de5b5a76349945008c4d768928330a77">Springer-Verlag
+LNCS</a>&nbsp; volume <a href="http://www.springerlink.com/content/g74v077t4465/">5486</a>,
+pages 308-325. <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>Declarative
+debugging of membership equational logic specifications </b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/Ugo08.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/Ugo08.txt">(BibTex)</a>.<br>
+R. Caballero, N. Martí-Oliet, A. Riesco, and A. Verdejo.<br>
+In P. Degano, R. D. Nicola and J. Meseguer, editors, Concurrency,
+Graphs and Models. Essays Dedicated to Ugo Montanari on the Occasion of
+His 65th Birthday.<br>
+    <a href="http://www.springerlink.com/content/v12601vu0488r403/">Springer-Verlag
+LNCS</a>&nbsp; volume <a href="http://www.springerlink.com/content/n2n46v02752h/">5065</a>,
+pages 147-163. <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>A declarative
+debugger for Maude</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/DDMaude.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/DDMaude.txt">(BibTex)</a>.<br>
+A. Riesco, A. Verdejo, N. Martí-Oliet, and R. Caballero.<br>
+In J. Meseguer and G. Rosu, editors, Algebraic Methodology and Software
+Technology - 12th International Conference, AMAST 2008.<br>
+    <a href="http://www.springerlink.com/content/v12601vu0488r403/">Springer-Verlag
+LNCS</a>&nbsp; volume <a href="http://www.springerlink.com/content/l423t1632754/">5140</a>,
+pages 116-221. <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>Similarity-based
+Reasoning in Qualified Logic Programming</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/CRR08rev.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/CRR08.txt">(BibTex)</a>.<br>
+R. Caballero, M. Rodríguez-Artalejo and C. A. Romero-Díaz.<br>
+In Proceedings of the 10th International ACM SIGPLAN Symposium
+on Principles and Practice of Declarative Programming (PPDP'08).<br>
+Pages 185-194. Valencia, Spain. <a href="http://www.acm.org/">ACM</a> <br>
+  </li>
+  <br>
+  <li><font color="#af4000"><b>A Theoretical
+Framework for the Declarative Debugging of Datalog Programs</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/sdkb08.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/sdkb08.bib">(BibTex)</a>.<br>
+R.
+Caballero, Y. García-Ruiz and F. Sáenz-Pérez.<br>
+    <a href="http://www.springerlink.com/content/p3190075p752/?p=6d1c3d02c61a413f9742bc0049cc0be5&amp;pi=0">Semantics
+in Data and Knowledge Bases</a>&nbsp;
+SDKB 2008. <br>
+&nbsp;<a href="http://www.springerlink.com/content/v12601vu0488r403/">Springer-Verlag
+LNCS</a>. <a href="http://dx.doi.org/10.1007/978-3-540-88594-8_8">DOI</a>.
+Vol. 4925. Pages
+143-159.&nbsp;ISBN&nbsp;978-3-540-88593-1<br>
+    <br>
+  </li>
+  <li><font color="#af4000"><b>Declarative
+Diagnosis of Missing Answers in Constraint
+Functional-Logic Programming</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/flops08.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/flops08.bib">(BibTex)</a>.<br>
+Rafael
+Caballero, Mario Rodríguez Artalejo and Rafael del Vado Vírseda.<br>
+In J. Garrigue and M. Hermenegildo (Eds.): Proceedings of FLOPS 2008. <br>
+    <a href="http://www.springerlink.com/content/v12601vu0488r403/">Springer-Verlag
+LNCS</a>&nbsp;. Vol. 4989. Pages 305-321.&nbsp;ISBN
+978-3-540-78968-0<br>
+    <br>
+  </li>
+  <li><font color="#af4000"><b>A declarative
+debugger for Maude functional modules.</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/wrla08.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wrla08.txt">(BibTex)</a>.<br>
+Rafael
+Caballero, Narciso Martí-Oliet, Adrián Riesco and Alberto Verdejo.<br>
+In 7th International Workshop on Rewriting Logic and its Applications,
+WRLA 2008. <br>
+Electronic Notes in Computer Science. Volume 238(3), Pages 63-81, ISSN:
+1571-0661<br>
+    <br>
+  </li>
+  <li><font color="#af4000"><b>A new proposal
+for
+debugging datalog programs.</b></font> <a href="http://gpd.sip.ucm.es/rafa/papers/CGSwflp07.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/CGSwflp07.txt">(BibTex)</a>.<br>
+R. Caballero, Y. García-Ruiz and F. Sáenz-Pérez.<br>
+In 16th International Workshop on Functional and (Constraint) Logic
+Programming (WFLP’07), June.<br>
+Electronic Notes in Computer Science. Volume 216.&nbsp;
+Pages&nbsp;79-92, ISSN: 1571-0661<br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Declarative
+Debugging of Missing Answers in Constraint Functional-Logic Programming.</b></font>
+    <a href="http://gpd.sip.ucm.es/rafa/papers/crv07.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/crv07.txt">(BibTex)</a>.<br>
+R. Caballero, M. Rodríguez Artalejo and R. del Vado Vírseda.<br>
+23rd International Conference on Logic Programming (ICLP 2007).
+September 2007. <br>
+    <a href="http://www.springerlink.com/content/v12601vu0488r403/">Springer-Verlag
+LNCS</a>. <a href="http://dx.doi.org/10.1007/978-3-540-74610-2">DOI</a>.
+Volume 4670. ISBN:&nbsp;978-3-540-74608-9. ISSN:
+0302-9743 (Print) 1611-3349 (Online)<br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Implementing
+Dynamic Cut in Toy</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/wflp06b.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wflp06b.txt">(BibTex)</a>. <br>
+Rafael Caballero and Yolanda García Ruíz <br>
+WFLP 2006 - 15th Workshop on Functional and (Constraint) Logic
+Programming, <br>
+    <a href="http://portal.acm.org/citation.cfm?id=1247751.1248147&amp;coll=GUIDE&amp;dl=GUIDE">Electronic
+Notes in Computer Science</a>. <a href="http://dx.doi.org/10.1016/j.entcs.2007.01.009">DOI</a>
+Volume 177 , (June 2007),
+ISSN:1571-0661. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Algorithmic
+Debugging of Java Programs</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/wflp06a.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wflp06a.txt">(BibTex)</a>. <br>
+Rafael Caballero, Christian Hermanns, and Herbert Kuchen <br>
+WFLP 2006 - 15th Workshop on Functional and (Constraint) Logic
+Programming, <br>
+Electronic Notes in Computer Science. Volume 177 , (June 2007),
+ISSN:1571-0661. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Declarative
+Diagnosis of Wrong Answers in
+Constraint Functional-Logic Programming</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/40790421.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/40790421.bib">(BibTex)</a>. <br>
+Rafael Caballero, Mario Rodríguez-Artalejo, and Rafael del Vado Vírseda
+    <br>
+Proc. of the Twenty Second International Conference on Logic
+Programming (ICLP 2006), <br>
+    <a href="http://www.springer.de/comp/lncs"> LNCS </a>
+Vol. 4079, Springer-Verlag, 2006. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>A declarative
+debugger of incorrect answers for constraint functional-logic programs</b></font>
+    <a href="http://gpd.sip.ucm.es/rafa/papers/wcflp05.pdf">(PDF)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wcflp05.bib">(BibTex)</a> <br>
+Rafael Caballero. Proc. of WCFLP'05 (ISBN 1-59593-069-8). <a href="http://www.acm.org/">ACM</a> <br>
+    <em> <font size="-1"> © ACM, (2005). This is
+the author's version of the work. It is posted here by permission of
+ACM for your personal use. Not for redistribution. <br>
+The definitive version was published in WCFLP '05: Proceedings of the
+2005 ACM SIGPLAN workshop on Curry and functional logic programming,
+(2005) <a href="http://doi.acm.org/10.1145/1085099.1085102">http://doi.acm.org/10.1145/1085099.1085102</a>
+    </font> </em> <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Constraint
+solving for generating glass-box test cases</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/wflp2004.ps.zip">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/wflp2004.pdf">(PDF)</a>. <br>
+R. Caballero, C. Lembeck, R.A. Müller and H. Kuchen. Proc. of WFLP'04
+(ISSN 0935-3232)<br>
+    <a href="http://www-i2.informatik.rwth-aachen.de/WFLP04/WFLP-proceedings.pdf">Aachener
+Informatik Berichte</a>. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>DDT: A
+Declarative Debugging Tool for Functional-Logic Languages</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/flops04.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/flops04.pdf">(PDF)</a>. <br>
+Rafael Caballero and Mario Rodríguez-Artalejo. <br>
+7th Int Symp. FLOPS'04. <br>
+    <a href="http://www.springer.de/comp/lncs"> LNCS </a>
+Vol. 2998 (ISBN 3-540-21402-X), Springer-Verlag, 2004. <br>
+    <br>
+  </li>
+  <li><font color="#af4000"><b>Improving
+Deterministic Computations in Lazy Functional Logic Languages</b></font>
+    <a href="http://gpd.sip.ucm.es/rafa/papers/jflpcut0309.ps.gz">(PS)</a>
+    <a href="http://gpd.sip.ucm.es/rafa/papers/jflpcut0309.pdf">(PDF)</a>.
+    <br>
+Rafael Caballero and Francisco J. López-Fraguas. <br>
+Special Issue on the Sixth International Symposium on Functional and
+Logic Programming. <br>
+    <a href="http://danae.uni-muenster.de/lehre/kuchen/JFLP/">The
+Journal of Functional and Logic Programming</a> (ISSN 1080-5230),
+Vol. 2003, Special Issue 1. <br>
+Published by <a href="http://danae.uni-muenster.de/eapls/">EAPLS</a>,
+2003. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Declarative
+Debugging for Encapsulated Search</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/76005.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/76005.pdf">(PDF)</a>. <br>
+Rafael Caballero and Wolfgang Lux. <br>
+Electronic Theoretical Notes in Computer Science, Vol. 76.
+(ISSN 1571-0661), 13 pages. <a href="http://www.elsevier.com/">Elsevier</a>,
+2003. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Dynamic Cut
+with Definitional Trees</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/flops02.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/flops02.pdf">(PDF)</a>. <br>
+Rafael Caballero and Francisco J. López-Fraguas. <br>
+6th Int Symp. FLOPS'02. <br>
+    <a href="http://www.springer.de/comp/lncs"> LNCS </a>
+Vol. 2441 (ISBN 3-540-44233-2), pp. 245-258, Springer-Verlag, 2002. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>A Declarative
+Debugging System for Lazy Functional-Logic Programs</b></font>.
+<a href="http://gpd.sip.ucm.es/rafa/papers/64.0.007.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/64.0.007.pdf">(PDF)</a>. <br>
+Rafael Caballero and Mario Rodríguez-Artalejo. <br>
+Electronic Notes in Computer Science, Vol. 64.
+(ISSN 1571-0661). 63 pages. <a href="http://www.elsevier.com/">Elsevier</a>,
+2002. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Theoretical
+Foundations for the declarative debugging of lazy functional-logic
+programs</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/flops01.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/flops01.pdf">(PDF)</a>. <br>
+Rafael Caballero, Francisco J. López-Fraguas, and Mario
+Rodríguez-Artalejo. <br>
+5th Int Symp. FLOPS'01. <br>
+    <a href="http://www.springerlink.com/content/7840x5pu0kbdbf62/">LNCS
+    </a>Vol. 2024 (ISBN 3-540-41739-7), pp. 170-184, Springer-Verlag,
+2001. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>A Declarative Debugger of Wrong Answers for Lazy Functional Logical
+  Programs</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/wflp01.pdf">(PDF)</a>
+      <br> Rafael Caballero, and Mario Rodríguez-Artalejo. <br>
+      In Proc. of the International Workshop on Functional and (Constraint) Logic Programming
+      (<a href="https://www.informatik.uni-kiel.de/%7Ewflp2001/">WFLP 2001</a>)<br>
+      <a href="https://www.informatik.uni-kiel.de/%7Ewflp2001/proceedings/"> Report No. 2017, University of Kiel</a>
+      <br><br>
+  </li>
+  <li> <font color="#af4000"><b>Extensions: A
+technique for structuring functional-logic programs</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/psi99.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/psi99.pdf">(PDF)</a>. <br>
+Rafael Caballero and Francisco J. López-Fraguas. <br>
+Third. Int. Andrei Ershov Memorial Conf. on Perspectives of System
+Informatics (PSI), <br>
+    <a href="http://www.springer.de/comp/lncs"> LNCS </a>
+Vol. 1755 (ISBN 3-540-67102-1 ), pp. 297-310. Springer-Verlag, 2000. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>A
+functional-logic perspective of parsing</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/flops99.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/flops99.pdf">(PDF)</a>. <br>
+Rafael Caballero and Francisco J. López-Fraguas. <br>
+4th Int Symp. FLOPS'99. <br>
+    <a href="http://www.springer.de/comp/lncs"> LNCS </a>
+Vol. 1722 (ISBN 3-540-66677-X), pp. 85-99, Springer-Verlag, 1999. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Functional-Logic
+Parsers in Toy</b></font>. <a href="http://gpd.sip.ucm.es/rafa/papers/techparsers.ps.gz">(PS)</a> <a href="http://gpd.sip.ucm.es/rafa/papers/techparsers.pdf">(PDF)</a>. <br>
+Rafael Caballero and Francisco J. López-Fraguas. <br>
+Technical Report SIP-7498. Univ. Complutense de Madrid, 1998. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Acerca de una
+Enumeración Peirceana de los Naturales </b></font> (in
+Spanish). <a href="http://gpd.sip.ucm.es/rafa/papers/96030203.ps.gz">(PS)</a>
+    <a href="http://gpd.sip.ucm.es/rafa/papers/96030203.pdf">(PDF)</a>.
+    <br>
+Fernando Soto, Edgar Osejo, and Rafael Caballero. <br>
+    <a href="http://matematicas.unal.edu.co/revistas/boletin/">Boletín
+de Matemáticas</a> (ISSN 0120-0380), Nueva Serie, Vol. III, pp.
+83-96. Colombia, 1996. <br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Técnicas de
+diagnóstico y depuración declarativa para lenguajes lógico-funcionales</b></font>
+(Ph. D. in Spanish). <a href="http://gpd.sip.ucm.es/rafa/tesis/tesis.pdf">(PDF)</a>. <br>
+Rafael Caballero. Tesis Doctoral. Junio 2004.</li>
+  <br>
+</ul>
+
+            </div>
+
+			<div id="tabs-3" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+<ul>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/nosql/index.html">Bases de Datos NoSQL</a><br>
+    <br>
+  </li>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/pr/index.html">Programación con restricciones</a><br>
+    <br>
+  </li>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/md/index.html">Matemática
+Discreta</a><br>
+    <br>
+  </li>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/bdsi/index.html">Bases de
+Datos y Sistemas de Información</a><br>
+    <br>
+  </li>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/MAC/index.html">Métodos
+abstractos de cómputo (doctorado)</a></li>
+  <br>
+  <li><a href="http://gpd.sip.ucm.es/rafa/docencia/epl/index.html">Extensiones
+de programación lógica (máster)</a><br>
+    <br>
+  </li>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/programacion/index.html">Apuntes
+de Java</a> (CC. Físicas e Ing. Electrónica). </li>
+  <br>
+  <li> <a href="http://gpd.sip.ucm.es/rafa/docencia/mtp/index.html">Metodología y Tecnología de
+la Programación</a> </li>
+  <br>
+</ul>
+
+            </div>
+
+			<div id="tabs-4" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+			<ul>
+
+<li> <font color="#af4000"><b>BIG DATA con PYTHON. Recolección, almacenamiento y proceso</b></font><br>
+Rafael Caballero, Enrique Martín y Adrián Riesco. RC libros. 2018.
+ISBN  978-8494897207<br>
+    <br>
+  </li>
+
+
+  <li> <font color="#af4000"><b>Las bases de Big Data.</b></font><br>
+Rafael Caballero y Enrique Martín. <a href="http://www.loslibrosdelacatarata.org/libro/mostrar/id/1085">Ed. Catarata</a>.
+ISBN 978-84-9097-086-7<br>
+    <br>
+  </li>
+
+
+
+  <li> <font color="#af4000"><b>Matemática
+Discreta para Informáticos. Ejercicios resueltos.</b></font><br>
+Rafael Caballero Roldán, Teresa Hortalá González, Narciso Martí Oliet,
+Susana Nieva Soto, Antonio Pareja Lora, Mario Rodríguez Artalejo. <a href="http://www.pearsoneducacion.com/resultado.asp?ean=9788483223949">Pearson
+Publicaciones</a>. ISBN 978-84-8322-394-9<br>
+    <br>
+  </li>
+  <li> <font color="#af4000"><b>Iniciación a
+la programación en C#, un enfoque práctico.</b></font><br>
+Yolanda Cerezo López,Olga Peñalba Rodríguez, Rafael Caballero Roldán <a href="http://www.deltapublicaciones.com/catalogo/fichas_web/inicia_prog_c_sharp.htm">Delta
+Publicaciones</a>. ISBN 84-96477-53-3. <br>
+  </li>
+</ul>
+
+
+            </div>
+
+			<div id="tabs-5" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+<ul>
+
+  <li> Books: </li>
+  <ul>
+    <li>&nbsp;<font color="#af4000"><b>Internet Astrometry</b></font>,
+chapter of the book <a href="http://www.amazon.com/Observing-Measuring-Patrick-Practical-Astronomy/dp/1461439442/ref=dp_ob_title_bk/181-0453629-7240522">
+Observing and Measuring Visual Double Stars (Patrick Moore's Practical
+Astronomy Series)</a>, edited by R. W. Argyle. Springer; 2nd ed. 2012
+edition (September 6, 2012). </li>
+  </ul>
+  <br>
+  <li>&nbsp; <a name="other"><font style="color: rgb(0, 0, 153);"> </font></a>Papers:</li>
+  <ul>
+    <li>&nbsp;<font color="#af4000"><b>New Common Proper-Motion Pairs with R.A. Between 00h and 01h</b></font><a href="http://www.jdso.org/volume11/number3/Caballero_167_169.pdf" target="_blank" onfocus="if(this.blur)this.blur();">(PDF</a>)<br>
+Rafael Caballero.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 11, Number 3. July 2015.</span></li>
+    <br>
+    <li><span class="header_text"><font color="#af4000"><b>Trece Nuevos
+sistemas con movimiento propio común</b></font> (<a href="http://www.infoastro.com/dobles/oed15.pdf">.PDF</a>).<br>
+Rafael Caballero.&nbsp;<span class="header_text">&nbsp;<a href="http://elobservadordeestrellasdobles.wordpress.com/">El
+Observador de Estrellas Dobles</a>. Año VI, Número 15 · julio/diciembre 2015<br>
+      </span> </span></li>
+    <br>
+
+    <li>&nbsp;<font color="#af4000"><b>Six Proper Motion Pairs Measured
+with the 2-meter Faulkes Telescope North</b></font><a href="http://www.jdso.org/volume9/number1/Genet_61_68.pdf">
+(PDF</a>)<br>
+Rafael Caballero , Russell Genet, J.D. Armstrong, Steve McGaughey,
+Cindy Krach, Audreanna Leatualli, Aaron Rohzinski, Coleen Rohzinski,
+Eric Rohzinski, Noah Rohzinski, McKayla Wandell, John Martinez, and
+Thomas Smith.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 9, Number 1. Pages 61-68. 2013.</span></li>
+    <br>
+    <li>&nbsp;<font color="#af4000"><b>351 New Common Proper-Motion
+Pairs from the
+Sloan Digital Sky Survey</b></font><a href="http://www.jdso.org/volume8/number1/Caballero_v8_p58.pdf">
+(PDF</a>)<br>
+Rafael Caballero.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 8, Number 1. Pages 58-70. 2012.</span></li>
+    <br>
+    <li><span class="header_text"><font color="#af4000"><b>Tres Nuevos
+Pares con MPC</b></font> (<a href="http://gpd.sip.ucm.es/rafa/astro/papers/oed1.pdf">.PDF</a>).<br>
+Rafael Caballero.&nbsp;<span class="header_text">&nbsp;<a href="http://elobservadordeestrellasdobles.wordpress.com/">El
+Observador de Estrellas Dobles</a>. N.º 9 · julio/diciembre 2012<br>
+      </span> </span></li>
+    <br>
+    <li><font color="#af4000"><b>New
+Northern Hemisphere Common Proper-
+Motion Pairs from the UCAC-3 Catalog</b></font><a href="http://www.jdso.org/volume6/number1/Caballero.pdf" target="_blank" onfocus="if(this.blur)this.blur();">
+(PDF</a>)<br>
+Rafael Caballero.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 6, Number 1. Pages 97-113. 2010.</span></li>
+    <br>
+    <li>&nbsp;<font color="#af4000"><b>Finding
+New Common Proper-Motion Binaries by Data Mining</b></font><a href="http://www.jdso.org/volume5/number3/Caballero2.pdf" target="_blank" onfocus="if(this.blur)this.blur();">
+(PDF</a>)<br>
+Rafael Caballero.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 5, Number 3. Pages 156-167. 2009.</span></li>
+    <br>
+    <li><span class="header_text"><font color="#af4000"><b>Entradas
+duplicadas en el Washington Double Star Catalog</b></font> (<a href="http://gpd.sip.ucm.es/rafa/astro/papers/oed1.pdf">.PDF</a>).<br>
+Rafael Caballero.&nbsp;<span class="header_text">&nbsp;<a href="http://elobservadordeestrellasdobles.wordpress.com/">El
+Observador de Estrellas Dobles</a>. N.º 1 · enero/abril 2009<br>
+      </span> </span></li>
+    <br>
+    <li>&nbsp;<font color="#af4000"><b>HJ1853:
+Old companion Lost, New Companion Found </b></font><a href="http://www.jdso.org/volume4/number4/Caballero.pdf" target="_blank" onfocus="if(this.blur)this.blur();">(PDF</a>)<br>
+Rafael Caballero.&nbsp;<span class="header_text"><a href="http://www.jdso.org/">Journal of Double Star
+Observations</a>, Volume 4, Number 4. 2008.</span></li>
+    <br>
+  </ul>
+  <br>
+  <li><a href="http://gpd.sip.ucm.es/rafa/astro/dobles/recopila">Double Star
+Observations</a> (in Spanish)</li>
+</ul>
+
+            </div>
+
+
+</body></html>
