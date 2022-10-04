@@ -1,0 +1,13 @@
+Quienes retuitean a "TeamTrump" (mostrar el camino) (salen 13)
+MATCH p=(A) -->({nombre:'TeamTrump'}) return p
+
+Usuaurios que no retuitean, ni directa ni indirectamente a TeamTrump (no hay camino de ellos a TeamTrump) 24
+match (A) where not (A)-[*]->({nombre:"TeamTrump"}) return (A)
+
+Número de usuarios retuiteados por el usuario con nombre 'ErinMPerrine', que a su vez retuitean a este usuario 
+
+MATCH p=(A:Usuario {nombre:'ErinMPerrine'})-[*2]->(A) return p
+
+
+Camino con 5 nodos en total (4 retweets) que lleve desde 'KatrinaPierson' hasta 'JasonMillerinDC', pero que no incluyan a 'TeamTrump'
+MATCH p=(A:Usuario {nombre:'JasonMillerinDC' })<-[*4]-({nombre:'KatrinaPierson'}), (sin:Usuario { nombre:'TeamTrump' }) WHERE NONE (x IN nodes(p) WHERE x=sin) RETURN p

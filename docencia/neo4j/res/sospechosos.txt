@@ -1,0 +1,22 @@
+match(n) detach delete(n);
+
+CREATE (Bertoldo:Victima {nombre:'Bertoldo', edad:34,mensaje:'i'}),
+ (Herminia:Sospechoso {nombre:'Herminia', edad:33,mensaje:'si'}),
+ (Aniceto:Sospechoso {nombre:'Aniceto', edad:49,mensaje:'a'}),
+ (Calixta:Sospechoso {nombre:'Calixta', edad:30,mensaje:'lli'}),
+ (Melibeo:Sospechoso {nombre:'Melibeo', edad:43,mensaje:'m'}),
+ (Celestina:Sospechoso {nombre:'Celestina', edad:21,mensaje:'be'}),
+ (Herminia)-[:AMISTAD]->(Bertoldo),
+       (Herminia)-[:AMISTAD]->(Melibeo),
+       (Herminia)-[:AMOR]->(Melibeo),
+       (Aniceto)-[:AMISTAD]->(Bertoldo),
+       (Melibeo)-[:AMISTAD]->(Bertoldo),
+       (Bertoldo)-[:AMISTAD]->(Melibeo),
+       (Bertoldo)-[:AMISTAD]->(Aniceto),
+       (Bertoldo)-[:AMISTAD]->(Celestina),
+       (Bertoldo)-[:AMOR]->(Herminia),
+       (Celestina)-[:AMOR]->(Bertoldo),
+       (Melibeo)-[:AMOR]->(Calixta),
+       (Calixta)-[:AMOR]->(Celestina),
+       (Aniceto)-[:AMOR]->(Herminia),
+       (Herminia)-[:AMOR]->(Aniceto)
