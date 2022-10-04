@@ -1,1 +1,1286 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<meta name="author" content="Rafael Caballero Roldán">
+	<title>Bases de datos orientadas a grafo</title>
+    <link href="themes/prism.css" rel="stylesheet" />
+    <style>
+thead {color:green;}
+tbody {color:blue;}
+tfoot {color:red;}
 
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+
+<script src="prism.js"></script>
+
+<img src="https://dist.neo4j.com/wp-content/uploads/neo4j_logo.png" height = 200 alt="Neo4j"></img>
+
+Rafael Caballero
+
+<h1>1 Introducción</h1>
+
+<h2> 1.1 Ejemplo: búsqueda de anillos</h2>
+<p>
+Tenemos una tabla en una base de datos SQL que indica qué ciertas empresas venden productos a otras:
+</p>
+
+<img src=img/neo4jtabla1.png alt="img/neo4jtabla1.png" width=400ptx></img>
+
+<p>
+En esta tabla la columna <i>facturador</i> indica la empresa que vende o factura un producto,
+que <i> facturado</i> es la empresa que paga por el servicio. Esta información es fácil de representar,
+por ejemplo como una tabla SQL. Sin embargo, supongamos que estamos interesados en <i>anillos de ventas</i>:
+buscamos secuencias de empresas A, B, C...A tal que A factura a B, B factura a C, y así hasta llegar a
+una empresa que factura a A y cierra el anillo.
+</p>
+
+<p>
+Aquí vemos un anillo de este tipo en nuestra tabla:
+</p>
+
+<img src=img/neo4jtabla2.png alt="img/neo4jtabla2.png" width=400ptx></img>
+
+<p>
+Tenemos que <i>Envasadora Paketo</i> vende a <i>Semillas Sidi</i>, que vende a <i>Invernaderos Invernalia</i>,
+que a su vez vende a <i>Aceites Olé</i>, que finalmente vende al primer elemento del anillo,
+<i>Envasadora Paketo</i>. Nótese que aunque hemos usado un código de colores para cada empresa aun así
+el anillo no resulta nada evidente en el formato de tabla. Posteriormente veremos que en una base
+de datos orientada a grafos este tipo de estructuras se presentan de una manera mucho más visual.
+
+
+<p>El interés de estos anillos puede ser, por ejemplo, que vendamos una aplicación de facturación y que
+si todas las empresas lo adquieren el intercambio de datos sea más sencillo. Si es el caso y si casi todas ya
+tienen nuestra aplicación, quizás merezca hacer un precio especial a las que faltan para tener el anillo
+completo. Otra razón para buscar anillos de este tipo puede ser lograr fidelización de los clientes;
+aunque alguno reciba una oferta de otra aplicación desconfiará porque sus conocidos tienen todos la
+misma y temerá que haya problemas de compatibilidad entre ellas.
+</p>
+
+<p>
+En otras ocasiones, la detección de anillos tiene interés para detectar fraudes complejos, integrados
+por diversos agentes coordinados. El sector de la banca y las aseguradoras dedica mucho esfuerzo a la detección
+de estas estructuras organizadas, para las que resultan especialmente útiles las bases de datos orientadas a grafos.
+</p>
+
+<p>Pero, ¿no se pueden obtener estos anillos mediante sencillas consultas en SQL? La respuesta es que no,
+al menos de forma eficiente. Si en la tabla anterior quisiéramos buscar anillos de longitud 3, y
+llamamos t a la tabla, podríamos escribir:
+</p>
+
+<pre><code class="language-sql">
+SELECT t1.facturador, t1.facturado, t2.facturado, t3.facturado
+FROM t as t1, t as t2, t as t3
+WHERE t1.facturado=t2.facturador AND
+      t2.facturado=t3.facturador AND
+      t3.facturado=t1.facturador;
+</code></pre>
+
+<p>Aparte de que el código es realmente confuso, tiene un problema: solo vale para anillos de longitud 3.
+Si queremos buscar anillos de longitud mayor tenemos que ir generando nuevas consultas, más y más
+complejas. SQL tiene una solución para este tipo de situaciones, las <i>consultas recursivas</i>.
+Sin embargo estas consultas son muy ineficientes en presencia de gran cantidad de valores.
+Es este uno de los casos de aplicación de las bases de datos orientadas a grafos.
+</p>
+
+<h2> 1.2.- ¿Qué es una base de datos orientada a grafo?</h2>
+<p>
+Las bases de datos orientadas a grafo heredan su estructura y terminología de
+la <i>teoría de grafos</i> creada por Leonard Euler alrededor de 1736 mientras intentaba resolver
+el problema conocido como los <i>siete puentes de  Könisberg</i>.
+El problema consistía en ver si era posible dar un paseo por los siete puentes de la ciudad,
+pasando una única vez por cada uno de ellos. Para representar el problema, Euler sugirió una
+representación en la que las porciones de ciudad conectadas por los puentes eran puntos, y los
+puentes líneas que unían esos puntos:
+</p>
+
+<img src=img/neo4jkonisberg.png alt="img/neo4jkonisberg.png" width=640ptx></img>
+
+<p>
+En la imagen se ve en azul el río que atraviesa la ciudad y que hace dos islas centrales. La primera
+isla tiene 4 puentes, dos hacía cada lado, y la segunda isla dos puentes. Además, hay un séptimo
+puente que une ambas islas. Sobre la imagen se ve el grafo correspondiente que sugirió Euler:
+cada isla y cada orilla se convierte en un punto (punto rojo en la imagen), también llamado <i>nodo</i>
+o <i>vértice</i> en terminología de grafos, mientras que cada puente se representa por una
+línea llamada <i>arista</i> o <i>relación</i>.
+</p>
+
+<p>
+Euler demostró que atravesar todas las aristas una sola vez
+(lo que hoy en día se llama un <i>camino euleriano</i>) solo era posible si el grafo era
+
+<ol>
+<li> <i>Conexo</i>, lo que quiere decir que desde cualquier vértice hasta cualquier otro.</li>
+<li> Con 0 o dos vértices de grado impar. El <i>grado</i> de un vértice es el número de aristas que inciden en
+él.</li>
+</ol>
+
+En el caso del grafo de los puentes de Könisberg se cumplía la primera condición pero no la segunda,
+porque hay 4 vértices de grado impar (todos los del grafo), por lo que el paseo buscado
+sin repetir puentes y cruzándolos todos una sola vez no era posible.
+</p>
+
+<p>
+Pronto se vio que esa representación era útil en muchos otros casos.
+Hoy en día se utiliza para resolver problemas relacionados con la posición de componentes en circuitos,
+diseño de transportes (el mapa de metro es un buen ejemplo de grafo), análisis de redes sociales (los puntos son
+usuarios de la red y las línea gente que le sigue o a la que siguen), control de epidemias,  etc.
+</p>
+
+<p>
+ Hay que notar que a menudo nos interesa que la línea tenga
+una dirección,
+por ejemplo que el usuario A siga al usuario B, no implica que el usuario B tenga que seguir al A.
+También sería el caso en el que queremos hacer el recorrido de los puentes en coche pero no todos los
+puentes son de dos direcciones.
+Para indica la direccionalidad se emplean <i>aristas dirigidas</i> que se representan como flechas.
+La mayor parte de las bases de datos orientadas a grafos utilizan aristas dirigidas. Esto no supone
+ninguna limitación, aunque sí puede ser una molestia; si queremos "simular" aristas no dirigidas, lo que
+debemos hacer es introducir dos aristas dirigidas cada vez que quedamos poner una no dirigida: una de "ida"
+y otra de "vuelta".
+</p>
+
+<p> Por ejemplo nuestro grafo de facturación entre empresas es dirigido:
+</p>
+
+<img src=img/neo4jfacturacion.png alt="img/neo4jfacturacion.png" width=640ptx></img>
+
+
+<p>
+Hemos representado con líneas azules un anillo de facturación,
+que es en lo que estamos interesados.
+</p>
+
+
+<p>
+Hay que mencionar que, dentro de las bases de datos NoSQL, las <i>bases de datos orientadas a grafo</i> ocupan un lugar especial,
+ya que se utilizan para propósitos muy específicos,  rara vez como bases de datos de uso general.
+Es habitual que ya tengamos nuestros datos almacenados en una base de datos SQL, o quizás en una NoSQL
+orientada a documento como MongoDB, y veamos que cierto análisis que nos interesa se podría llevar a
+cabo más fácilmente en una base de datos orientada a grafos. En este caso exportaríamos nuestros datos
+par nutrir una base de datos de este tipo y allí poder realizar los análisis.
+A esta coexistencia de distintas tecnologías de almacenamiento en el mismo proyecto se le llama
+<i>persistencia políglota</i> y es habitual en todo proyecto con una mínima complejidad.
+</p>
+
+<h2> 1.3.- Las bases de datos orientadas a grafos más comunes y sus características</h2>
+
+<p>Sin duda las base de datos orientada a grafos más famosa es <i>Neo4j</i>, y es la que vamos a ver
+en este capítulo. Neo4j es capaz de trabajar en entornos Big Data y es especialmente útil cuando se
+trata de encontrar "caminos" entre nodos concretos. Su lenguaje de consultas <i>Cypher</i>, que vamos
+a ver aquí, es muy expresivo y potente. Una alternativa con características similares pero
+menos extendida es <i>JanusGraph</i>, una iniciativa de la fundación Apache que utiliza como
+lenguaje de consultas el lenguaje <i>Gremlin</i>. Las bases de datos multiparadigma, como
+Microsoft Azure Cosmos DB y OrientDB también suelen disponer de una parte orientada a grafos,
+al igual que hace MongoDB o Spark. Sin embargo, hay que señalar que en general estas bases de datos no tan
+específicas de grafos suelen ser menos eficientes.
+</p>
+
+<h2> 1.4.- Instalación arranque de Neo4j</h2>
+
+<p>
+La instalación es realmente sencilla. De hecho, si solo pretendemos hacer unas 
+pocas pruebas, podemos emplear la 
+<a "https://neo4j.com/sandbox/"> Neo4j Sandbox</a>, un acceso en la nube sencillo,
+que permite crear proyectos con duración limitada. 
+
+Si en lugar de esto preferimos tener nuestra propia versión de Neo4j
+instalada en local, basta con ir a <a href="https://neo4j.com/">https://neo4j.com/</a>
+y buscar la sección "Downloads". Allí descargaremos el <i>Neo4j Desktop</i>. Tras instalarlo y abrirlo
+procedemos
+a crear un nuevo proyecto haciendo click en el botón <i>New</i> de la parte izquierda:
+</p>
+
+<img src=img/neo4jdesktop.png alt="img/neo4jdesktop.png" width=640ptx></img>
+
+<p>
+Por defecto el nombre del proyecto es <i>Project</i> pero si situamos el ratón sobre el nombre y
+pulsamos en el lápiz a su derecha podemos cambiarlo, por ejemplo a <i>AnilloEmpresas</i>.
+Cada proyecto puede tener dentro varias bases de datos. En  Neo4j el término "base de datos" se
+denomina, simplemente <i>grafo</i>. De toda formas solo podemos tener un grafo activo cada vez.
+</p>
+
+<p>
+Podemos crear un grafo nuevo dentro del proyecto <i>AnilloEmpresas</i> simplemente pulsando en la parte derecha
+<i>Add a database</i>. Allí nos preguntará si queremos crear la base de datos en local o enlazar
+con una base de datos externa, por ejemplo con una alojada en el servicio cloud de Neo4j,
+<a href="https://neo4j.com/aura/">Aura</a>:
+
+</p>
+ <img src=img/neo4jcreategraph.png alt="img/neo4jcreategraph.png" width=640ptx></img>
+
+<p>
+Nosotros elegimos <i>Create a Local Graph</i>. Nos pedirá un nombre y un password, que debemos recordar.
+ Llamemos a esta base de datos <i>facturación</i>. A continuación pulsamos <i>start</i> para iniciar
+ el grafo. Ya tenemos nuestro primer grafo creado, de momento con cero vértices y cero aristas.
+ Cuando terminemos debemos recordar que habrá que dar <i>stop</i> para parar la base de datos con seguridad.
+</p>
+
+<p>En Neo4j, el Desktop en local hace el papel de servidor. Como ya lo hemos iniciado, lo siguiente
+sería abrir un cliente desde el que podamos hacer operaciones como insertar, hacer consultas, etc.
+Para ello pulsaremos en Open, que abrirá el cliente en el que haremos el resto del trabajo.
+Y a partir de ahora, cuando queramos utilizar Neo4j el proceso será siempre el mismo:
+
+<ol>
+<li>Abrir el <i>Neo4j-Dekstop</i>. </li>
+<li>Seleccionar (o crear) el proyecto que deseemos,
+y dentro del proyecto iniciar (o crear e iniciar) el grafo que deseemos</li>
+<li>Pulsar Open para abrir el browser de columnas, o ir a Python o cualquier
+otro lenguaje para conectar con el servidor.</li>
+</ol>
+</p>
+
+
+<h1> 2.- El cliente <i>Neo4j Browser</i> </h1>
+<p>
+Tras seleccionar <i>Project</i>, iniciar un grafo y pulsar <i>Open</i> en el
+Desktop veremos el cliente por defecto, el Neo4j-Browser.
+Si lo preferimos también podemos
+usar como cliente cualqueir navegador como Google Chrome. Para ello
+nos bastará con introducir en la barra de direcciones
+<a href="http://localhost:7474">http://localhost:7474</a> (los puertos
+por defecto se pueden ver y cambiar en el Desktop pulsando en los tres puntos de
+arriba a la derecha del grafo que deseemos y seleccionando <i>Manage</i>).
+
+</p>
+
+<p>
+Dentro del browser tenemos distintas zonas:
+</p>
+
+ <img src=img/neo4jbrowser.png alt="img/neo4jbrowser.png" width=640ptx></img>
+<p>
+<ul>
+<li> La <i>línea de comandos</i> permite introducir consultas Cypher y comandos.
+Los comandos empiezan siempre precedidos por dos puntos, mientra que las consultas
+Cypher no. Podemos movernos con flecha arriba abajo para seleccionar las
+consultas anteriores. </li>
+<li> Las <i>cajas de resultados</i> nos mostrarán la salida de la consulta/comando.
+Se van añadiendo hacia abajo, así podremos ver varios resultados anteriores.</li>
+<li>A la derecha temos la barra de herramientas que nos permitirán hacer varios
+ajustes</li>
+</ul>
+
+Algunos comandos que nos pueden ser de utilidad:
+
+<ul>
+<li><i>:clear</i>Borra la lista de resultados  </li>
+<li><i>:help</i>. Muy útil para acceder al manual.  Por ejemplo, probad :help MATCH</li>
+<li><i>:history</i> </li>
+</ul>
+
+</p>
+
+<p> Vamos a hacer un par de ajustes de configuración útiles para el resto
+de este capítulo.
+Para ellos hacemos click en la rueda dentada de
+la derecha, en la barra de herramientas. Allí marcaremos las opciones
+<i>Enable multi statement query editor</i> y desmarcaremos <i>Connect result nodes</i>.
+</p>
+
+<p>
+La primera opción, marcar <i>Enable multi statement query editor</i>,
+nos permitirá copiar y pegar scripts conteniendo más de una instrucción,
+separadas por punto y coma, simultáneamente en la línea de comandos.
+La segunda, desmarcar <i>Connect result nodes</i> hará que al mostrar
+la salida de una consulta solo se muestren las aristas que corresponden a la
+consulta y no todas las del grafo que haya entre los nodos seleccionados.
+</p>
+
+<p>
+Para ver el aspecto de un grafo dentro del browser vamos a copiar, aunque de momento no
+las entendamos, las instrucciones del fichero <a href="res/factura.txt">factura.txt</a> dentro del browser.
+Son dos instrucciones una primera para borrar el grafo antiguo y o/tra para
+crear el nuevo. Simplemente las copiamos y pegamos en
+la línea de comandos, y  el triángulo de la derecha (play).
+
+Si obtuviéramos un error de este estilo:
+</p>
+
+
+
+<img src=img/neo4jerrormultiple.png alt="img/neo4jerrormultiple.png" width=640ptx></img>
+<p>
+significaría que nuestra configuración en Neo4j no soporta más de una
+instrucción, lo que no debe pasar si hemos activado
+<i>Enable multi statement query editor</i>.
+</p>
+
+<p>
+Una vez procesadas estas instrucciones podemos pulsar <i>Database</i> en la barra de herramientas
+(la primera opción, con el dibujo de un disco). Allí nos mostrará los tipos
+de nodos y aristas de nuestro grafo.
+
+Nos dice que hace 10 nodos y 15 relaciones o aristas. Los nodos son de dos tipos:
+<i>Empresa</i> que representa a las empresas que o bien facturan o bien son
+facturadas, y <i>Software</i> que va a representar diferentes software
+de contabilidad o facturación. Igualmente, tenemos dos tipos de relaciones:
+<i>FACTURA</i> que corresponde a la facturación de una empresa a otra tal y
+como mostrábamos en la tabla del principio del capítulo, y <i>UTILIZA</I>
+que indica que una empresa utiliza un software determinado.
+Si ahora pulsamos sobre la casilla con leyenda <i>*(15)</i> debajo de
+<i>Relationship keys</i>, obtenemos una representación del grafo completo:
+</p>
+
+
+<img src=img/neo4jgrafocompleto.png alt="img/neo4jgrafocompleto.png" width=640ptx></img>
+
+<p>
+Los  colores indican los dos tipos de nodos. Y cada relación incluye el nombre
+del tipo de relación. Como veremos, tanto nodos como relaciones tienen
+<i>propiedades</i>, datos que contienen. En el caso de los nodos de tipo <i>Empresa</i>
+se está mostrando el nombre de la empresa, pero por desgracia no se ve completo.
+Para arreglar esto hacemos click sobre el nombre <i>Empresa</i> en la parte superior
+del propio grafo. En la linea de abajo nos aparecerán las características que definen
+la apariencia del nodo. Allí podemos hacer click sobre el círculo de mayor tamaño en
+<i>Size</i> para aumentar el radio del nodo y que se vea el nombre completo:
+</p>
+<img src=img/neo4jchangingsize.png alt="img/neo4jchangingsize.png" width=640ptx></img>
+
+
+<p>
+De esta forma podemos cambiar el color y elegir qué propiedad concreta se muestra
+(característica <i>Caption</i>). En este caso el nodo de tipo Empresa tiene dos:
+el nombre  de la empresa, que es el seleccionado, y el número de empleados.
+Como ejercicio podemos probar ahora a hacer algo similar con el tipo de nodo
+<i>Software</i>. En la imagen se muestra la propiedad precio, pero podemos querer
+seleccionar el <i>id</i>, que tiene el nombre del software y por tanto parece mejor
+visualmente.
+</p>
+<h1> 3.- Creación de nodos y relaciones en Cypher  </h1>
+
+<p>
+En el apartado anterior copiamos de forma "ciega" instrucciones
+del lenguaje de consultas Cypher para crear el grafo;
+ahora vamos a empezar a entenderlas mejor.
+</p>
+
+<h2> 3.1.- Representación de nodos y relaciones </h2>
+
+<p>
+La estructura de un nodo en Cypher es:
+</p>
+<img src=img/neo4jnodo.png alt="img/neo4jnodo.png" width=400ptx></img>
+
+<p>
+La única parte obligatoria son los paréntesis, así <code>()</code> representa un
+nodo cualquiera (nótese que recuerda a la forma de un círculo). La <i>variable</i>
+es un identificador que usaremos en una expresión Cypher para referirnos a ese
+nodo en concreto (esto se entenderá mejor al presentar la creación de nodos y relaciones).
+La etiquetas indican el tipo del nodo. Por ejemplo <code>(:Empresa)</code>
+representa cualquier  nodo de tipo <i>Empresa</i>. Un nodo puede tener varios tipos
+simultáneamente, separados por <code>:</code>.
+ De esta forma si en un catálogo de unos grandes almacenes donde los objetos se representan
+ por nodos con tipo su sección queremos encontrar productos que están en la sección cocina y también en
+ la de electrodomésticos, podríamos escribir <code>(:Cocina:Electrodomesticos)</code>.
+ Opcionalmente un nodo puede incluir entre llaves propiedades como en el siguiente
+ ejemplo:
+</p>
+
+<pre>
+  <code class="language-sql">
+(EP:Empresa {nombre:'Envasadora Paketo', empleados:20})
+  </code>
+</pre>
+<p>
+Una relación se define mediante dos nodos una flecha que los une. La relación
+más genérica sería <code>()-->()</code>. La forma general es:
+</p>
+
+<img src=img/neo4jrel.png alt="img/neo4jrel.png" width=500ptx></img>
+
+<p>
+La sintaxis de los nodos inicial y final es la ya descrita para nodos.
+Además, la fecha que los une puede llevar en la mitad, entre corchetes,
+un nombre de variable, etiquetas de tipos y propiedades. Un ejemplo, representando
+una relación entre un nodo de tipo <i>Empresa</i> y otro de tipo <i>Software</i>:
+</p>
+
+<pre>
+  <code class="language-sql">
+(:Empresa)-[:UTILIZA]->(:Software)
+  </code>
+</pre>
+<p>
+Atención a las mayúsculas: Neo4j distingue mayúscula y minúsculas. Para evitar
+ errores difíciles de detectar es mejor seguir algún convenio, como escribir las propiedades
+ siempre en minúsculas, las etiquetas (tipos) de nodos con la primera en mayúsculas, y
+ las variables y tipos de relaciones totalmente en mayúsculas. Solo da igual al escribirlas palabras
+ reservadas.
+</p>
+<!-- <h1> 1.- Ejercicio </h1> -->
+
+<h2>3.2.- CREATE </h2>
+
+<p>
+Ahora la sintaxis de la instrucción <code>create</code> debe ser sencilla de entender:
+</p>
+
+<img src=img/neo4jcreatesyntax.png alt="img/neo4jcreatesyntax.png" width=400ptx></img>
+
+<p> es decir, se trata de la palabra reservada <code>CREATE</code>
+seguida de una secuencia de nodos a crear y de relaciones que implican a estos nodos o a otros
+ya existentes en el grafo. Como ejemplo veamos un fragmento del código que hemos copiado y pegado en la sección anterior:
+<pre>
+  <code class="language-sql">
+CREATE (GS:Empresa {nombre:'Girasoles Solete', empleados:15}),
+       (AO:Empresa {nombre:'Aceites Olé', empleados:120}),
+       (GS)-[:FACTURA {dias:90}]->(AO);
+
+  </code>
+</pre>
+</p>
+
+<p>
+Primero se crean dos nodos, correspondientes a dos empresas, y luego la relación de
+tipo <i>FACTURA</i> que expresa que la primera empresa factura a la segunda en 90 días.
+Ahora se debe entender mejor el papel de las variables; al crear la relación se utilizan los nombres de
+las variables en representanción de cada nodo. Otra forma de hacerlo hubiera sido:
+</p>
+
+<pre>
+  <code class="language-sql">
+CREATE (:Empresa {nombre:'Girasoles Solete', empleados:15})
+            -[:FACTURA {dias:90}]->
+       (AO:Empresa {nombre:'Aceites Olé', empleados:120});
+
+  </code>
+</pre>
+
+<p>
+donde en lugar de los nombres de las variables se escriben directamente los nodos y la
+relación.
+</p>
+
+<h2>3.3.- Tipos en Cypher </h2>
+
+<p>
+Ya hemos visto la mayor parte de los tipos de valores  en Cypher: nodos, relaciones, strings, <i>maps</i> para las propiedades...
+la siguiente figura muestra todos los tipos posibles:
+</p>
+
+<img src=img/neo4jtypes.png alt="img/neo4jtypes.png" width=600ptx></img>
+
+<p>
+Los tipos básicos son números, en distintas base, cadenas de caracteres o <i>strings</i>
+y valores lógicos. Además, tenemos los ya mencionados nodos y relaciones.  Finalmente
+tenemos los caminos, muy útiles en las consultas y que veremos en detalle posteriormente,
+y los dos únicos tipos compuestos: los diccionarios o <i>maps</i>  y las listas de valores.
+En el resto del capítulo iremos viendo más en profundidad el papel que juegan los caminos
+y el diseño de consultas complejas. De momento, baste decir que los valores de
+las propiedades de
+nodos y relaciones  pueden emplear lists y maps anidados para representar información estructurada.
+</p>
+
+
+
+<h2>3.4.- MERGE </h2>
+
+<p>
+<code>CREATE</code> añade todos los elementos especificados al grafo. Aunque en
+general esto será lo deseado, en ocasiones puede generar duplicidades.
+
+Por ejemplo, podemos querer añadir una empresa, con nombre 'Invernaderos Invernalia',
+pero si hacemos
+</p>
+<pre>
+  <code class="language-sql">
+CREATE (:Empresa {nombre:'Invernaderos Invernalia'});
+  </code>
+</pre>
+
+<p>
+y la empresa ya existe, habremos producido una duplicidad.
+</p>
+
+
+<p>
+
+Esto se podría arreglar añadiendo una restricción de unicidad sobre
+la propiedad <code>nombre</code>,
+pero entonces el <code>create</code> completo fallaría, y en casos de creaciones de muchos
+nodos simultáneos tendríamos que tampoco se han añadido los que sí eran nuevos.
+ También después veremos cómo con una sentencia <i>MATCH</i>
+podemos verificar previamente si los nodos ya existen, pero lugar de hacerlo tan complicado,
+podemos confiar en <code>MERGE</code> que hace lo mismo que <code>CREATE</code> pero
+evitando crear elementos que ya existan.
+</p>
+
+<pre>
+  <code class="language-sql">
+MERGE (:Empresa {nombre:'Invernaderos Invernalia'});
+  </code>
+</pre>
+
+<p>
+La operación <code>MERGE</code> recuerda a los <i>upsert</i> de otras bases de datos
+como MongoDB. Como sucede con las operaciones <i>upsert</i> podemos especificar qué sucede
+tanto si el valor es nuevo como si ya existe:
+</p>
+<pre>
+  <code class="language-sql">
+MERGE (II:Empresa {nombre:'Invernaderos Invernalia'})
+ON CREATE SET II.creado = timestamp()
+ON MATCH SET II.accedido = date();
+</code>
+</pre>
+
+<p>
+si la empresa ya existía se modifica su propiedad  <code>accedido</code> (o se crea si no existe la
+propiedd), y si es nuevo se añade la propiedad <code>creado</code>
+</p>
+
+<h2>3.5.- Importación masiva de datos</h2>
+
+<p>
+Por supuesto si queremos importar o exportar grandes cantidades de datos, utilizar
+<code>CREATE</code> no parece la mejor opción. Aunque queda fuera del ámbito de este
+curso entrar en detalle, debemos mencionar la existencia de dos formas de
+ <a href="https://neo4j.com/developer/guide-import-csv/">importar ficheros CSV</a>:
+
+<ol>
+<li> Desde Cypher podemos utilizar una instrucción
+<code>LOAD CSV</code>
+para importar ficheros CSV sencillos</li>
+<li> Para importaciones más complejas que incluya ficheros con nodos,
+otros con relaciones, etc podemos utilizar la herramienta externa <i>neo4j-admin import</i>.
+</ol>
+</p>
+
+<h1>4.- Consultas básicas con Match</h1>
+
+
+<H2>4.1  MATCH: forma general</H2>
+<p>
+Las instrucciones <code>MATCH</code> son la forma fundamental de realizar consultas
+en Cypher. Serían el equivalente al <code>SELECT</code>
+de SQL. En nuestro ejemplo lo queremos para buscar
+anillos de empresas, y esa va a ser una de las especialidades de
+<code>MATCH</code>: encontrar caminos en un grafo.
+
+La sintaxis general de esta instrucción, con las partes opcionales
+entre corchetes es:
+</p>
+
+
+<pre>
+  <code class="language-sql">
+[MATCH WHERE]
+[OPTIONAL MATCH WHERE]
+[WITH [ORDER BY] [SKIP] [LIMIT]]
+RETURN [ORDER BY] [SKIP] [LIMIT]
+</code>
+</pre>
+
+<p>
+Un vistazo rápido a cada una de las secciones:
+</p>
+
+<img src=img/neo4jmatchparts.png alt="img/neo4jmatchparts.png" width=600ptx></img>
+
+<H2>4.2  RETURN</H2>
+
+<p>
+
+Es la única sección obligatoria de <code>MATCH</code> e indica el valor final que devolverá la consulta y que nos mostrará el navegador. Sería el equivalente a la proyección en MongoDB. Puede incluir partes opcionales <code>SKIP n</code> y <code>LIMIT n</code> para saltar los primeros
+resultados o mostrar solo los primeros n resultados, respectivamente. Además admite <code>ORDER BY</code>
+para ordenar información, de forma ascendente (sufijo <code>
+ASC</code>, por defecto) o descendente (<code>DESC</code>). Algunos ejemplos
+</p>
+<pre>
+  <code class="language-sql">
+  return 1 // muestra 1
+  return "hola" // muestra “hola”
+  return 1 as uno // renombra la columna
+  return 1, 2, 3, ”pepe” // secuencia (4 columnas)
+  return {nombre:’Bertoldo’, edad:31} // se pueden mostrar maps
+  return [1,2,3,’uff’] // y listas
+  return (:Ciudad) // error: no se pueden “inventar” nodos ni relaciones
+  </code>
+</pre>
+
+<H2>4.3  MATCH</H2>
+
+<p>
+La parte <code>MATCH</code> indica qué nodos/relaciones
+del grafo debe seleccionar la consulta, sería la parte <code>where</code> de SQL o el primer argumento del <code>find</code> en MongoDB.
+Consta de dos partes:
+
+<ol>
+  <li>En la primera parte se indica la forma de los elementos que deben estar.</li>
+  <li>La segunda se filtran por características de esos elementos, normalmente por el valor de sus propiedades. </li>
+</ol>
+</p>
+
+<H3>4.3.1  Patrones de nodos y relaciones</H3>
+<p>
+Para poder extraer toda la potencia de <code>MATCH</code>
+debemos conocer la sintaxis de patrones para nodos y relaciones.
+
+Para nodos la sintaxis es ya conocida:
+</p>
+
+<img src=img/neo4jpatronesnodo.png alt="img/neo4jpatronesnodo.png" width=600ptx></img>
+
+  <p>
+  En cambio, para relaciones tenemos que considerar nuevos patrones que nos serán muy útiles:
+  </p>
+
+<img src=img/neo4jpatronesrelacion.png alt="img/neo4jpatronesrelacion.png" width=600ptx></img>
+
+<p>
+Los primeros cuatro patrones corresponden a caminos de longitud uno, y los siguientes a caminos de longitud mayor. Hay que ser cuidadoso al utilizar patrones de tipo * (caminos de cualquier longitud) en grafos grandes, o al menos añadir la opción <code>LIMIT</code> en el resultado.
+</p>
+
+<H3>4.3.2  Where</H3>
+
+<p>
+Veamos un ejemplo utilizando la cláusula <code>WHERE</code>, empresas que facturan a otras con pago a
+30 días:
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa)-[R:FACTURA]-> (B:Empresa)
+WHERE R.dias=30
+RETURN A
+</code>
+</pre>
+
+<p>
+La primera parte busca caminos <code>(A)-[R]->(B)</code>
+con <code>A</code> y <code>B</code> nodos de tipo <code>Empresa</code> y <code>R</code> una relación de tipo <code>FACTURA</code>.
+Además, la parte <code>WHERE</code> se encarga de comprobar que el número de días para la facturación sea 30.
+Finalmente, la parte <code>RETURN</code> devuelve a la empresa que factura. El resultado:
+</p>
+
+<img src=img/neo4ja30.png alt="img/neo4ja30.png" width=400ptx></img>
+<p>
+En este caso hemos empleado el operador de igualdad, pero está bien sabe que tenemos un repertorio más amplio:
+
+<ol>
+  <li>Aritméticos: +, -, *, / , %, ^</li>
+  <li>Relacionales: =, <>, <, >, ⇐, >=, IS NULL,  IS NOT NULL</li>
+  <li>Cadenas: STARTS WITH, ENDS WITH, CONTAINS, + (concatenación) y =~ para expresiones regulares</li>
+  <li>Booleanos: AND, OR, XOR, NOT</li>
+  <li>Listas: IN (pertenecia), + (concatenación).</li>
+</ol>
+
+En particular el uso del operador <code>NOT</code> es muy útil para asegurar que una
+relación no está presente en el grafo.  Por ejemplo si queremos un listado de empresas  tal a las que "Semillas Sidi"  no factura directa ni indirectamente, podemos escribir
+
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa {nombre:"Semillas Sidi"}), (B:Empresa)
+WHERE NOT (A)-[:FACTURA*]->(B)
+RETURN B
+</code>
+</pre>
+que nos devolverá 3 empresas.
+</p>
+
+<H3>4.3.3  Formas de mostrar la salida</H3>
+<p>
+ Parece que solo dos empresas facturan a otras a 30 días. Puede que en este caso la información en forma de grafo no sea la más
+ útil, sino que prefiramos ver los datos de estas empresas en formato texto. Para ello tenemos las opciones de la parte izquierda (en un rectángulo rojo en la imagen) que nos permiten seleccionar cómo se muestra la información de salida.
+</p>
+
+<p>
+La opción <i>Table</i> nos permite ver los resultados en forma de documentos JSON, la opción <i>Text</i> muestra algo similar a las salidas textuales en shells de  SQL. Finalmente,
+<i>Code</i> nos muestra una estructura JSON compleja
+que incluye tanto la consulta como las respuestas en forma de lista.
+</p>
+
+<H3>4.3.4 Mostrando el camino</H3>
+
+<p>
+Supongamos ahora que no solo queremos mostrar las empresas
+que facturan a otra 30 días sino también las empresas facturadas. Una idea puede ser añadir estos nodos en el return:
+
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa)-[R:FACTURA]-> (B:Empresa)
+WHERE R.dias=30
+RETURN A,B
+</code>
+</pre>
+
+<p>
+Sin embargo, esto tiene el problema de que mostrará 4 nodos aislados, no sabremos cuál hace el papel de facturador ni el de facturado.
+Tampoco sabremos quién factura a quién. Para representar con
+más precisión esta consulta podemos devolver caminos en lugar de nodos:
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH P=(A:Empresa)-[R:FACTURA]-> (B:Empresa)
+WHERE R.dias=30
+RETURN P
+</code>
+</pre>
+
+<p>
+Ahora, nombramos el camino que cumple la condición con la variable P, y devolvemos precisamente ese camino. El resultado,
+ahora sí, es el esperado:
+</p>
+
+<img src=img/neo4ja30conp.png alt="img/neo4ja30conp.png" width=400ptx></img>
+
+<H2>4.4 Anillos de empresas ¡por fin! </H2>
+
+<p>
+Ahora ya podemos resolver el problema de localizar anillos de empresas que se facturan unas a otras:
+</p>
+
+
+<pre>
+  <code class="language-sql">
+MATCH P=(N)-[:FACTURA*]-> (N) RETURN P;
+</code>
+</pre>
+
+<p>
+La consulta es muy sencilla y revela toda la pontencia de Neo4j:
+Buscamos caminos de relaciones <code>FACTURA</code>
+desde un node N hasta si mismo.  De esta forma tan sencilla
+obtenemos el resultado deseado, y además de una forma muy visual:
+</p>
+
+<img src=img/neo4jrespuesta.png alt="img/neo4jrespuesta.png" width=600ptx></img>
+
+<H2>4.5 Optional Match</H2>
+
+<p>
+Esta opción permite añadir información a la salida de la consulta si existe, pero no elimina datos. Recuerda a los <i>outer join</i> de SQL. Supongamos que queremos saber qué software utiliza cada empresa. Una primera opción con lo que sabemos hasta ahora:
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH p=(E:Empresa)-[:UTILIZA]->(S:Software) return p
+</code>
+</pre>
+
+<p>
+El resultado es:
+
+</p>
+
+<img src=img/neo4jsoftware1.png alt="img/neo4jsoftware1.png" width=600ptx></img>
+
+<p>
+Sin embargo, supongamos que la respuesta incluya todas las empresas, también las que todavía no disponen de ningún software. En ese caso podemos utilizar <code>OPTIONAL MATCH</code>, seleccionando primero todas las empresas y luego añadiendo el software si existe:
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH (E:Empresa)
+OPTIONAL MATCH p=(E)-[:UTILIZA]->(S:Software)
+return E,p
+</code>
+</pre>
+
+<p>
+El resultado ahora:
+
+</p>
+
+<img src=img/neo4jsoftware2.png alt="img/neo4jsoftware2.png" width=600ptx></img>
+
+<p>
+Si mostramos el resultado en forma de tabla vemos que, en efecto, esta consulta es análoga
+a un <i>outer join</i> de SQL en el sentido de que rellena con null la información que falta:
+</p>
+
+<img src=img/neo4jsoftware3.png alt="img/neo4jsoftware3.png" width=640ptx></img>
+
+<H1>5.- Listas</H1>
+
+<p>
+Las listas son una estructura básica en Neo4j por las siguientes razones:
+
+<ol>
+  <li>Son una estructura útil para representar arrays en las propiedades, al estilo de JSON.</li>
+  <li>Permiten "recolectar" resultados diversos de una consulta (<code>collect</code>). </li>
+  <li>Permiten generar resultados diferentes (<code>unwind</code>).</li>
+  <li>Los caminos pueden analizarse porque se convierten automáticamente en
+  listas con nodos y relaciones alternos; esto permite añadir requerimientos sobre los caminos en las propias consultas.</li>
+</ol>
+
+
+<H2>5.1.- Operaciones</H2>
+Comencemos viendo algunas operaciones sobre listas:
+</p>
+
+<pre>
+  <code class="language-sql">
+
+return size([1,2,3,4,5]) //5
+
+return [1,2,3,4]+[5,6] //[1,2,3,4,5,6] (concatenación)
+
+return [1,2,3][1] // 2 (el primer elemento es el 0)
+
+return range(1,3)[4] //  null
+
+return range(1,3)[-1] // 3 (primero por el final)
+
+return range(0,20)[1..3] // 1,2 (sin incluir el último)
+
+</code>
+</pre>
+
+<p>
+Como vemos los accesos son muy similares a los de los lenguajes como Python, permitiendo tanto accesos con índices desde el principio como desde el final, e
+incluso <i>slices</i> para devolver fragmentos de listas, con la característica particular de que
+los accesos fuera de rango dan null, mientras que los fragmentos fuera de rango se truncan.
+También se permite el uso de <i>listas intensionales</i> con un aspecto muy similar
+al de los lenguajes funcionales como Haskell o Erlang:
+</p>
+
+<pre>
+  <code class="language-sql">
+return [x in range(0,10) where x % 2 = 0] // [0,2,4,6,8,10]
+
+return [x in range(0,10) where x % 2 = 0 | x+1 ] // [1, 3, 5, 7, 9, 11]
+
+</code>
+</pre>
+
+<H2>5.2.- Predicados y funciones para listas</H2>
+
+<p>
+Además, una serie de funciones hacen que las listas se puedan usar en las condiciones <code>where</code> de las instrucciones <code>match</code>:
+
+<ol>
+  <li>ALL, ANY, NONE,  SINGLE se cumplen si todos/alguno/ninguno/uno de los elementos cumplen una subcondición con listas y where. La sintaxis es <code>pred(variable IN list WHERE predicate)</code>, con <code>pred</code> cualquiera de los predicados anteriores.</li>
+      <li>EXISTS(patron o propiedad) devuelve true si el patrón o propiedad existe en
+      el grafo</li>
+  <li>Las relaciones/nodos de un camino c se obtienen con relationships(c)/nodes(c), respectivamente.
+</li>
+  <li>El tipo de una relación r se obtiene con type(r) . Las etiquetas de un nodo n con labels(n)
+</li>
+</ol>
+
+<H2>5.3.- Ejemplos</H2>
+
+Veamos un ejemplo. Supongamos que estamos interesados en conocer las etiquetas de la empresa con nombre "Semillas Sidi":
+</p>
+
+<pre>
+  <code class="language-sql">
+MATCH (E:Empresa {nombre:"Semillas Sidi"})
+RETURN labels(E)
+</code>
+</pre>
+
+
+<p>
+en este caso nos muestra la salida directamente en formato texto, ya que el return son etiquetas. La salida será <code>["Empresa", "Agricultura"]</code>.
+</p>
+
+<p>Veamos una consulta más compleja: queremos conocer el nombre y número de empleados de todas las empresas que participen en caminos de facturación de cualquier longitud que partan de la empresa "Aceites Olé" y terminan en una empresa de tipo Industria</p>
+
+<pre>
+  <code class="language-sql">
+MATCH p=(A:Empresa {nombre:"Semillas Sidi"}) -[:FACTURA *]->(B:Empresa:Industria)
+RETURN [x in nodes(p) where 'Empresa' in labels(x) | [x.nombre,x.empleados] ]
+</code>
+</pre>
+<p>
+El resultado, de nuevo de tipo textual, son dos listas porque hay dos caminos de este tipo:
+
+<pre>
+  <code class="language-sql">
+[["Semillas Sidi", 120], ["Invernaderos Invernalia", 8], ["Aceites Olé", 120], ["Envasadora Paketo", 20]]
+[["Semillas Sidi", 120], ["Invernaderos Invernalia", 8], ["Aceites Olé", 120], ["Maquinarias RunRun", 150]]
+</code>
+</pre>
+
+Cada lista contiene  a su vez listas, una por cada empresa que forma parte del camino, con
+dos elementos, el nombre de la empresa y el número de empleados.
+</p>
+
+<p>
+Finalmente, un ejemplo implicando alguno de los predicados vistos anteriormente. Supongamos ahora que nuestra empresa vende software a pequeñas empresas. Buscamos
+anillos de facturación en los que todas las empresas participantes tengan menos de 30 empleados. Esto lo podemos lograr con el predicado <code>all</code>:
+
+<pre>
+  <code class="language-sql">
+MATCH p=(A) -[:FACTURA *]->(A)
+WHERE all(x in nodes(p) where 'Empresa' in labels(x) and x.empleados<30)
+RETURN p
+</code>
+</pre>
+
+El resultado esta vez si es un grafo, el único anillo de facturación con estas características
+</p>
+
+<img src=img/neo4janillopocosempleados.png alt="img/neo4janillopocosempleados.png" width=200ptx></img>
+
+
+
+
+<H1>6.- Agregaciones</H1>
+
+<p>
+Las agregaciones son similares a otros lenguajes de consultas como SQL. En principio, la agregación considera como único grupo el grafo completo tendremos que utilizar consultas anidadas.
+</p>
+
+<H2>6.1- Agregaciones globales</H2>
+<p>
+Las operaciones de agregación son las usuales:
+
+<ol>
+  <li>COUNT: Número de elementos devuelto por match
+     Ejemplo: <code>match (n:Empresa) return count(n)  </code>.
+</li>
+  <li>MAX: máximo de una propiedad entre el conjunto de nodos devueltos
+    Ejemplo: match (n:Empresa) return max(n.empleados)   </li>
+  <li>MIN: mínimo de una propiedad entre el conjunto de nodos devueltos
+</li>
+  <li>SUM: suma de una propiedad entre el conjunto de nodos devueltos
+</li>
+  <li>AVG: media aritmética de una propiedad entre el conjunto de nodos devueltos
+</li>
+  <li> COLLECT: recopila salidas en una lista
+  <li><a href="https://neo4j.com/docs/cypher-manual/current/functions/aggregating/">Otras</a></li>
+</ol>
+
+</p>
+
+
+<H2>6.2- Anidando consultas con WITH</H2>
+
+<p>
+Supongamos que queremos determinar el nombre de la empresa con etiqueta Industria con más empleados a la que factura, directa o indirectamente, 'Semillas Sidi'
+
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa {nombre:"Semillas Sidi"}) -[:FACTURA *]->(B:Empresa:Industria)
+RETURN max (B.empleados),B.nombre
+</code>
+</pre>
+Sin embargo esto no funciona como esperamos porque hace un grupo por cada valor de B. La solución es hacerlo en dos etapas:
+
+<ol>
+  <li>Buscar el mayor número de empleados, pero en lugar de devolverlo con
+  <code>RETURN</code> usaremos <code>WITH</code> para ponerle nombre que se usará en el segundo paso.</li>
+  <li>Buscar el nombre de la empresa con ese número de empleados</li>
+</ol>
+
+La consulta:
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa {nombre:"Semillas Sidi"}) -[:FACTURA *]->(B:Empresa:Industria)
+WITH  max (B.empleados) as m
+MATCH (A:Empresa {nombre:"Semillas Sidi"}) -[:FACTURA *]->(B:Empresa:Industria {empleados:m})
+RETURN B.nombre,m
+</code>
+</pre>
+devuelve, ahora sí <code>"Maquinarias RunRun"	 150</code>
+</p>
+
+<p>
+Sin embargo, si observamos en la consulta anterior se busca dos veces la empresa 'Semillas Sidi'. Para evitar esta redundancia innecesaria, podemos valernos de nuevo de <code>WITH</code> para "almacenar" el valor y lograr una consulta más eficiente:
+
+<pre>
+  <code class="language-sql">
+MATCH (A:Empresa {nombre:"Semillas Sidi"}) -[:FACTURA *]->(B:Empresa:Industria)
+WITH  max (B.empleados) as m, A as Sidi
+MATCH (Sidi) -[:FACTURA *]->(B:Empresa:Industria {empleados:m})
+RETURN B.nombre,m
+</code>
+</pre>
+
+mejorando así la eficiencia
+</p>
+
+
+<H1>7.- Modificación y Eliminación</H1>
+
+<H2>7.1 Modificación con SET</H2>
+
+<p>
+SET  permite
+
+<ul>
+<li>Añadir una propiedad a un nodo.
+     Ejemplo:<code> match (n:Empresa {nombre:"Semillas Sidi"})
+                                    set n.personal = ["Bertoldo", "Herminia"] return n</code></li>
+
+<li>Borrar una propiedad
+    Ejemplo: <code> match (n:Empresa {nombre:"Semillas Sidi"})
+                                    set n.personal = NULL return n</code></li>
+
+<li>Copiar todas las propiedades de un nodo a otro
+ Ejemplo: <code> match (a:Empresa {nombre:"Semillas Sidi"}) , (b:Empresa {nombre:”A4”})
+                   set b=a  return a,b</code> (no hará si alguna de las empresas no existe)</li>
+
+<li>Añadir varias propiedades
+     Ejemplo: <code>match (n:Empresa {nombre:"Semillas Sidi"})
+                   set n +=  {país:"España", continente:"Europa"} return n</code></li>
+
+<li>Añadir una etiqueta
+    Ejemplo: <code>match (a:Empresa {nombre:"Semillas Sidi"})
+                   set n:Cooperativa return n</code></li>
+
+<li>Borrar una etiqueta
+ Ejemplo: <code>match (a:Empresa {nombre:"Semillas Sidi"})
+                   remove n:Cooperativa return n</code></li>
+
+</ul>
+</p>
+
+<H2>7.2 Cambiando datos con foreach</H2>
+<p>
+<code>foreach</code> permite recorrer una lista aplicando una acción a cada uno de sus nodos. Por ejemplo, supongamos que queremos añadir una propiedad <i>marked</i> con valor TRUE a todos los nodos que facturan directa o indirectamente (uno o más pasos) a "Semillas Sidi". Podemos escribir:
+
+<pre>
+  <code class="language-sql">
+MATCH p=(E:Empresa) -[:FACTURA *]-> (S:Empresa {nombre:"Vaquería Mu"})
+FOREACH (n in nodes(p) | set n.marked=TRUE)
+</code>
+</pre>
+
+Si ahora queremos buscar esos nodos podemos utilizar la función <code>exists</code> como condición:
+
+<pre>
+  <code class="language-sql">
+MATCH (E:Empresa)
+WHERE exists(E.marked)
+RETURN E
+</code>
+</pre>
+
+</p>
+
+
+<H2>7.3 Borrado de nodos</H2>
+<p>
+Para borrar simplemente seleccionamos con MATCH y borramos con <code> DELETE</code>. Por ejemplo, si queremos borrar la facturación de 'Piensos Rúmiame' a
+'Vaquería Mu' podemos escribir:
+<pre>
+  <code class="language-sql">
+MATCH ({nombre:'Piensos Rúmiame'})-[R:FACTURA]->({nombre:'Vaquería Mu'})
+DELETE R
+</code>
+</pre>
+
+Ojo al borrar un nodo que tiene relaciones; no nos lo permitirá porque tendríamos una arista sin nodo al final o al comienzo. Si queremos que al borrar el nodo se borren también todas las relaciones que empiezan o acaban en él debemos añadir la palabra reservada
+<code>DETACH</code>. Ahora entenderemos que la forma de borrar un grafo completo sea:
+
+<pre>
+  <code class="language-sql">
+MATCH (N)
+DETACH DELETE N
+</code>
+</pre>
+</p>
+
+
+
+<H1>8.- Otras instrucciones</H1>
+
+
+<H2>8.1 Índices y planes de ejecución</H2>
+<p>
+Si queremos mejorar la eficiencia de una consulta podemos precederla por la palabra
+<code>EXPLAIN</code> que mostrará gráficamente los pasos seguidos para resolver
+la consulta. También  podemos usar <code>PROFILE</code> que muestra más detalles, como el número de accesos. Por ejemplo consideremos la consulta
+
+<pre>
+  <code class="language-sql">
+EXPLAIN MATCH P=(A:Empresa {nombre:"Girasoles Solete"})-[R:FACTURA*]-> (B:Empresa {nombre:"Semillas Sidi"})
+RETURN P
+</code>
+</pre>
+
+La siguiente gráfica muestra el resultado de <code>EXPLAIN</code>  (izquierda) y
+<code>PROFILE</code> (derecha):
+</p>
+
+<img src=img/neo4jexplainprofile.png alt="img/neo4jexplainprofile.png" width=500ptx></img>
+
+<p>
+Los pasos son los mismos en ambos casos:
+
+<ol>
+  <li>Primero se seleccionan los nodos de tipo  <code>Empresa</code> que se almacenan en una variable <code>B</code>, la variable final.</li>
+  <li>A continuación se aplica el filtro  para que <code>B.nombre</code> tome el valor adecuado</li>
+  <li>Luego se buscan caminos entre nodos cualesquiera <code>A</code> y el nodo destino ya fijado,  <code>B</code></li>
+  <li>Se obliga a que <code>A.nombre</code> tome el nombre adecuado </li>
+  <li>Se proyectan los resultados</li>
+  <li>Se muestran</li>
+  </ol>
+
+El número de filas estimadas es una estimación estadística a partir de consultas similares
+y Neo4j lo emplea para seleccionar el plan de ejecución. Si queremos mejorar el número de
+accesos reales (el número de "hits" o accesos a la base de datos), podemos ayudarnos por un índice. Por ejemplo, en nuestra consulta podríamos crear un índice sobre el atributo
+<code>nombre</code> para los nodos de tipo <code>Empresa</code>:
+
+<pre>
+  <code class="language-sql">
+CREATE INDEX ON :Empresa(nombre)
+</code>
+</pre>
+
+los índices se pueden crear sobre varias propiedades y también se pueden crear sobre relaciones. Si repetimos el <code>PROFILE</code>  veremos que el plan de ejecución ha cambiado. La siguiente imagen muestra el paln anterior (izquierda( y el nuevo (derecha)
+
+</p>
+<img src=img/neo4jprofile12.png alt="img/neo4jprofile12.png" width=500ptx></img>
+
+<p>
+La diferencia principal es que los dos primeros pasos del antiguo plan de tipo <i>NodeByLabelScan</i> y <i>Filter</i> se han convertido en un solo paso <i>NodeIndexSeek</i>, que corresponde a una búsqueda utilizando índices. El número de hits de los dos pasos originales era 9+24=33 y en el nuevo quedan reducidos a solo 2.
+En una base de datos realmente grande la diferencia puede ser muy notable en términos de tiempo. Cabe preguntarse por qué el indice no se utiliza para buscar el segundo nombre, el
+de A. La razón es que los índices solo se pueden aplicar cuando se trata de buscar en el
+grafo completo´, pero no cuando se busca en el resultado de un paso anterior, que es lo que sucede con A.
+</p>
+
+
+<p>
+Debemos recordar que los índices aceleran las consultas a costa de retrasar la inserción y modificación de datos, que exigen modificar también todos los índices. Por ello, antes de una ingesta masiva de datos es habitual eliminar todos los índices.
+Para borrar un índice podemos utilizar <code>DROP INDEX ON</code>:
+
+<pre>
+  <code class="language-sql">
+DROP INDEX ON :Empresa(nombre)
+</code>
+</pre>
+
+Si en cualquier momento queremos ver la lista de indices debemos teclear:
+
+<pre>
+  <code class="language-sql">
+CALL db.indexes
+</code>
+</pre>
+</p>
+
+<H2>8.2 Restricciones</H2>
+<p>
+Un aspecto relacionado con la creación de índices es la imposición de restricciones. Neo4j
+incluye actualmente 4 tipos de restricciones:
+
+<ol>
+  <li>Restricciones de unicidad, que evitan que un valor se pueda repetir (análoga a las
+  claves primarias en bases de datos relacionales. En nuestro caso tendría sentido pedir que
+  no se repita el nombre de la empresa:
+  <pre>
+  <code class="language-sql">
+CREATE CONSTRAINT NombreUnico
+ON (n:Empresa)
+ASSERT n.nombre IS UNIQUE
+</code>
+</pre>
+Para asegurar unicidad,  Neo4j crea un índice sobre la propiedad, es decir la propiedad siempre debe existir y no repetirse. Tiene el
+efecto de que además ese índice se utilizará en las consultas. Es decir, si borramos el
+índice creado en la sección anterior, añadimos esta restricción de unicidad y probamos:
+
+<pre>
+  <code class="language-sql">
+PROFILE MATCH P=(A:Empresa {nombre:"Girasoles Solete"})-[R:FACTURA*]-> (B:Empresa {nombre:"Semillas Sidi"})
+RETURN P
+</code>
+</pre>
+Tendremos un plan de ejecución idéntico al que vimos con el índice, salvo que el primer paso
+se titulará <i>NodeUniqueIndexSeek</i> en lugar de <i>NodeIndexSeek</i>.
+
+</li>
+<li>Restricciones de clave de nodo. Extienden el tipo anterior a varias propiedades.
+
+<pre>
+  <code class="language-sql">
+CREATE CONSTRAINT NoRepiteNombreCompleto
+ON (n:Persona)
+ASSERT (n.Nombre, n.Apellido1, n.Apellido2)
+IS NODE KEY
+</code>
+</pre>
+</li>
+  <li>Existencia de propiedades. Aseguran que todo nodo de un tipo contendrá, con seguridad, una propiedad determinada. Un ejemplo:
+    <pre>
+  <code class="language-sql">
+CREATE CONSTRAINT ExistenciaEmpleados
+ON (n:Empresa)
+ASSERT EXISTS (n.empleados)
+</code>
+</pre>
+
+      </li>
+  <li>Existencia de propiedad en una relación. Análogo al anterior, con la misma sintaxis, pero para relaciones.</li>
+
+</ol>
+
+Solo la primera propiedad está incluida en la versión gratuita de Neo4J, las 3 restantes solo
+están disponibles si se adquiere la versión Enterprise.
+Si en cualquier momento queremos ver la lista de restricciones, debemos teclear:
+
+<pre>
+  <code class="language-sql">
+CALL db.constraints
+</code>
+</pre>
+
+</p>
+
+
+<H1>Caso práctico</H1>
+
+<p>
+Consideramos un imaginario grafo de transportes que podemos crear con
+<a href="res/vuelos.txt">estas instrucciones</a> Neo4j:
+</p>
+<img src=img/neo4jtransportes.png alt="img/neo4jtransportes.png" width=500ptx></img>
+
+<p>
+Como se ve se incluyen nodos de tipo <i>Ciudad</i> y de tipo <i>Capital</i>  (las capitales también están etiquetadas como ciudades). Ambos tipos de localidades tienen
+propiedades <i>habitantes</i> y el <i>nombre</i> del lugar. Si además es solo Ciudad
+también tiene una propiedad <i>provincia</i>. Además, entre dos localidades
+puede haber transporte por avión y/o por tren. En el caso del avión se conoce la <i>Aerolínea</i> y la <i>Hora</i> del vuelo (solo incluimos un máximo de un vuelo entre cada par de lugares).
+
+Queremos escribir consulltas para encontrar:
+
+<ol>
+  <li>Ciudades con conexión directa a Madrid por cualquier medio de transporte    (mostrar el camino, es decir el punto de partida, la relación y la llegada).
+</li>
+<li>Ciudades desde las que es posible llegar a Alicante en 2 o más pasos.</li>
+  <li>Queremos conocer todos los caminos de longitud menor o igual a 5 tales que el penúltimo lugar visitado sea “París”.
+ </li>
+  <li>Camino más corto para llegar desde París hasta Alicante (idea: investigar el predicado <i>shortestpath.</i></li>
+  <li>Longitud del camino más corto desde París hasta Alicante.</li>
+  <li>Camino más corto de Berlín a París que no incluya ningún trayecto en tren.</li>
+  <li>Parejas <i>B</i>,  <i>A/i>de ciudades en  las que hay un vuelo directo de <i>A</i> a <i>B</i>, ordenadas alfabéticamente por <i>B</i></i>.
+      <li>Por avería, el trayecto entre tren entre Almagro y Alcázar de San Juan ha quedado momentáneamente suspendido. Queremos añadir un flag <i>estado:"Suspendido"</i> para indicar esta contingencia. ¿Cómo se haría?  </li>
+<li>Finalmente la avería al a que hacía referencia la pregunta anterior va para largo, por lo que se decide suprimir este viaje en tren del grafo. Escribir la instrucción para hacerlo.</li>
+  <li>Número de conexiones de París con otras ciudades (en terminología de grafos: grado de salida del nodo París).</li>
+  <li>Número de conexiones que parten de París, pero esta vez considerando solo las de tipo avión.</li>
+  <li>Número de habitantes de la Ciudad/Capital con más habitantes de todas las que tienen acceso viajando en avión desde “París” (conexión con cualquier número de estaciones intermedias)
+</li>
+  <li>¿Qué instrucción debemos escribir para comprobar el plan de ejecución de la instrucción anterior incluyendo el número de consultas a la base de datos?</li>
+<li>¿Qué indices podemos crear para asegurar que la instrucción anterior  realiza menos accesos? Crearlos y comprobar que es así en efecto</li>
+  <li>Crear uná restricción para asegurar que no podemos introducir por descuído dos capitales con el mismo nombre.</li>
+</ol>
+
+
+
+</p>
+
+<h1>Enlaces de interés</h1>
+<ul>
+<li> <a href="https://neo4j.com/docs/cypher-refcard/current/">Neo4j Cypher Refcard 4.0</a>. Muy útil como referencia rápida</li>
+   
+        
+    <li><i>Graph Databases.  Ian Robinson, Jim Webber and Emil Eifren. Editorial  O'Reilly.</i>. Un libro  básico para aprender Neo4j, se puede descargar gratis <a href="https://neo4j.com/graph-databases-book">aquí</a>.</li>
+        
+         <li><i>The Practitioner’s Guide to Graph Data. Denise Gosnell and Matthias Broecheler. O'Reilly</i>No utiliza Neo4j sino el otro estándar para bases de datos, Gremlin. Enfatiza el paso desde bases de datos relacionales a bases de dtos orientadas a grafos comparando implementaciones en SQL y en grafos con Gremlin.</li>
+</ul>
+
+</body></html> 
