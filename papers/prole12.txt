@@ -1,0 +1,8 @@
+@INPROCEEDINGS{caballero-prole12,
+  author={Rafael Caballero and Jos\'e Luz\'on-Mart\'{\i}n and Antonio Tenorio},
+  title={{Test-Case Generation for SQL Nested Queries with Existential Conditions}},
+  booktitle={{XII Jornadas sobre Programaci\'on y Lenguajes, PROLE2012
+(SISTEDES)}},
+  month={September},
+  year={2012}
+  }

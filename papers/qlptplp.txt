@@ -1,0 +1,6 @@
+@article{qlptplp,
+title={{{A Transformation-based Implementation for CLP with Qualification and Proximity}},
+author={R. Caballero, M. Rodr\'iguez-Artalejo and C. A. Romero-D\'iaz},
+journal={Theory and Practice of Logic Programming},
+note = {Accepted for publication}
+}

@@ -1,0 +1,15 @@
+@incollection {springerlink:10.1007/978-3-642-22531-4_3,
+   author = {Almendros-Jiménez, Jesus and Caballero, Rafael and García-Ruiz, Yolanda and Sáenz-Pérez, Fernando},
+   affiliation = {Dpto. de Lenguajes y Computación, Universidad de Almería, Spain},
+   title = {XQuery in the Functional-Logic Language Toy},
+   booktitle = {Functional and Constraint Logic Programming},
+   series = {Lecture Notes in Computer Science},
+   editor = {Kuchen, Herbert},
+   publisher = {Springer Berlin / Heidelberg},
+   isbn = {},
+   pages = {35-51},
+   volume = {6816},
+   url = {http://dx.doi.org/10.1007/978-3-642-22531-4_3},
+   note = {10.1007/978-3-642-22531-4_3},
+   year = {2011}
+}

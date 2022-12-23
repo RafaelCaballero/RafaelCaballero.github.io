@@ -1,0 +1,11 @@
+@inproceedings{CRR08,
+	author = {Caballero, Rafael 
+		and Rodr\'{\i}guez-Artalejo, Mario 
+		and Romero-D\'{\i}az, Carlos A. },
+	title = {Similarity-based reasoning in qualified logic programming},
+	booktitle = {PPDP '08: Proceedings of the 10th international ACM SIGPLAN conference on Principles and Practice of Declarative Programming},
+	year = {2008},
+	pages = {185-194},
+	location = {Valencia, Spain},
+	publisher = {ACM},
+	address = {New York, NY, USA}}

@@ -1,0 +1,13 @@
+@inproceedings{CRR09,
+	Address = {Pasadena, CA, USA},
+	Author = {Caballero, Rafael and Rodr\'iguez-Artalejo, Mario and Romero-D\'iaz, Carlos A.},
+	Booktitle = {Logic Programming (ICLP'09)},
+	Editor = {Hill, P.M. and Warren, D.S.},
+	Month = {July 14-17},
+	Pages = {449-463},
+	Publisher = {Springer-Verlag Berlin Heidelberg},
+	Series = {LNCS},
+	Title = {Qualified Computations in Functional Logic Progamming},
+	Volume = {5649},
+	Year = {2009}
+}

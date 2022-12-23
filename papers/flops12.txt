@@ -1,0 +1,12 @@
+@INPROCEEDINGS{cgs12a-flops2012,
+ author    = {Rafael Caballero and
+              Yolanda Garc\'{\i}a-Ruiz and
+              Fernando S{\'a}enz-P{\'e}rez},
+ title = {{Declarative Debugging of Wrong and Missing Answers for SQL Views}},
+ booktitle = {Eleventh International Symposium on Functional and Logic Programming
+ (FLOPS 2012)},
+ year = {2012},
+ series = {LNCS},
+ publisher = {Springer-Verlag},
+ volume   = {7294}
+}

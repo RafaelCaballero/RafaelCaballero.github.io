@@ -1,0 +1,16 @@
+@proceedings{DBLP:conf/birthday/2008montanari,
+  editor    = {Pierpaolo Degano and
+               Rocco De Nicola and
+               Jos{\'e} Meseguer},
+  title     = {Declarative
+debugging of membership equational logic specifications},
+  booktitle = {Concurrency, Graphs and Models. Concurrency, Graphs and Models, Essays Dedicated to Ugo
+               Montanari on the Occasion of His 65th Birthday},
+  publisher = {Springer},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {5065},
+  year      = {2008},
+  pages     = {147,163},
+  isbn      = {978-3-540-68676-7},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}

@@ -1,0 +1,14 @@
+@inproceedings{1428485,
+ author = {Adrian Riesco and Alberto Verdejo and Narciso Mart\'{\i}-Oliet and Rafael Caballero},
+ title = {A Declarative Debugger for Maude},
+ booktitle = {AMAST 2008: Proceedings of the 12th international conference on Algebraic Methodology and Software Technology},
+ year = {2008},
+ isbn = {978-3-540-79979-5},
+ series    = {Lecture Notes in Computer Science},
+ volume    = {5140},
+ pages = {116--121},
+ location = {Urbana, IL, USA},
+ doi = {http://dx.doi.org/10.1007/978-3-540-79980-1_9},
+ publisher = {Springer-Verlag},
+ address = {Berlin, Heidelberg}
+ }

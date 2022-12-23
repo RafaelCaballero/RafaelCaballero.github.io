@@ -1,0 +1,12 @@
+@INPROCEEDINGS{crvm-lopstr11,
+ author    = {Rafael Caballero and
+              Adri\'an Riesco and
+              Alberto Verdejo and Narciso Mart\'{\i}-Oliet},
+ title = {{Simplifying Questions in Maude Declarative Debugger by Transforming Proof Trees}},
+ booktitle = {LOPSTR 2011},
+ year = {2011},
+ series = {LNCS},
+ publisher = {Springer-Verlag},
+ volume   = {7225},
+ pages = {73-89}
+}

@@ -1,0 +1,9 @@
+@inproceedings{DeclDebuggingErlang,
+   title = {A Declarative Debugger for Sequential {E}rlang Programs},
+   author = {Caballero, Rafael and Martin-Martin, Enrique and Riesco,
+Adri\'an and Tamarit, Salvador},
+   year = {2013},
+   booktitle = {To appear in Proceedings of the 7th International Conference
+on Tests \& Proofs (TAP 2013)},
+   location = {Budapest, Hungary}
+} 

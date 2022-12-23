@@ -1,0 +1,14 @@
+@inproceedings{wadt08,
+author = {A.~Riesco and A.~Verdejo and R.~Caballero and N.~Mart\'{\i}-Oliet},
+title = {Declarative debugging of rewriting logic specifications.},
+booktitle = {Recent Trends in Algebraic Development Techniques (WADT
+2008)},
+volume = {5486},
+pages = {308-325},
+series    = {Lecture Notes in Computer Science},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+projects = {MERIT,PROMESAS,STAMP},
+butype =  {},
+year      = {2009}
+ }

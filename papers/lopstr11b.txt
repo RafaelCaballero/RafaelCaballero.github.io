@@ -1,0 +1,13 @@
+@INPROCEEDINGS{acgs-lopstr111,
+ author    = {Jes{\'u}s Manuel Almendros-Jim{\'e}nez and
+              Rafael Caballero and
+              Yolanda Garc\'{\i}a-Ruiz and
+              Fernando S{\'a}enz-P{\'e}rez},
+ title = {{A Declarative Embedding of XQuery in a Functional-Logic Language}},
+ booktitle = {LOPSTR 2011},
+ year = {2011},
+ series = {LNCS},
+ publisher = {Springer-Verlag},
+ volume   = {7225},
+ pages = {42-56}
+}

@@ -1,0 +1,11 @@
+@article{CGSwflp07,
+ author = {Caballero, R. and Garc\'{\i}a-Ruiz, Y. and S\'{a}enz-P\'{e}rez, F.},
+ title = {A New Proposal for Debugging Datalog Programs},
+ journal = {Electron. Notes Theor. Comput. Sci.},
+ volume = {216},
+ year = {2008},
+ issn = {1571-0661},
+ pages = {79--92},
+ publisher = {Elsevier Science Publishers B. V.},
+ address = {Amsterdam, The Netherlands, The Netherlands},
+ }

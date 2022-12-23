@@ -1,0 +1,12 @@
+@incollection {flops2010,
+   author = {Caballero, Rafael and García-Ruiz, Yolanda and Sáenz-Pérez, Fernando},
+   affiliation = {Universidad Complutense de Madrid Departamento de Sistemas Informáticos y Computación Spain},
+   title = {Applying Constraint Logic Programming to SQL Test Case Generation},
+   booktitle = {Functional and Logic Programming},
+   series = {Lecture Notes in Computer Science},
+   editor = {Blume, Matthias and Kobayashi, Naoki and Vidal, Germán},
+   publisher = {Springer Berlin / Heidelberg},
+   pages = {191-206},
+   volume = {6009},
+   year = {2010}
+}

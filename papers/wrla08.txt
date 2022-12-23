@@ -1,0 +1,12 @@
+@article{wrla08,
+ author = {Caballero, R. and Mart\'{\i}-Oliet, N. and Riesco, A. and Verdejo, A.},
+ title = {A Declarative Debugger for Maude Functional Modules},
+ journal = {Electron. Notes Theor. Comput. Sci.},
+ volume = {238},
+ number = {3},
+ year = {2009},
+ issn = {1571-0661},
+ pages = {63--81},
+ publisher = {Elsevier Science Publishers B. V.},
+ address = {Amsterdam, The Netherlands, The Netherlands},
+ }

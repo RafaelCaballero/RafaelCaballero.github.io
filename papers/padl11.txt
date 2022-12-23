@@ -1,0 +1,15 @@
+@incollection {springerlink:10.1007/978-3-642-18378-2_13,
+   author = {Caballero, Rafael and García-Ruiz, Yolanda and Sáenz-Pérez, Fernando},
+   affiliation = {Departamento de Sistemas Informáticos y Computación, Universidad Complutense de Madrid, Spain},
+   title = {Integrating XPath with the Functional-Logic Language Toy},
+   booktitle = {Practical Aspects of Declarative Languages},
+   series = {Lecture Notes in Computer Science},
+   editor = {Rocha, Ricardo and Launchbury, John},
+   publisher = {Springer Berlin / Heidelberg},
+   isbn = {},
+   pages = {145-159},
+   volume = {6539},
+   url = {http://dx.doi.org/10.1007/978-3-642-18378-2_13},
+   note = {10.1007/978-3-642-18378-2_13},
+   year = {2011}
+}
