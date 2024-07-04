@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saludo Personalizado</title>
+    <script>
+        function mostrarSaludo() {
+            // Obtiene el valor del input
+            var nombre = document.getElementById("nombreInput").value;
+            // Muestra el saludo en el elemento con id "saludo"
+            document.getElementById("saludo").innerText = "Hola " + nombre;
+        }
+    </script>
+</head>
+<body>
+    <h1>Saludo Personalizado</h1>
+    <input type="text" id="nombreInput" placeholder="Introduce tu nombre">
+    <button onclick="mostrarSaludo()">Saludar</button>
+    <p id="saludo"></p>
+</body>
+</html>
