@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocabulario no flexivo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #626b78;
+      --line: #d5dae2;
+      --paper: #ffffff;
+      --panel: #f6f7f9;
+      --accent: #315f56;
+      --accent-dark: #244840;
+      --accent-soft: #e7f0ed;
+      --warm: #9a6428;
+      --focus: #1d70b8;
+      --shadow: 0 16px 38px rgba(26, 35, 49, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: #eef1f5;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    button,
+    input { font: inherit; }
+
+    button:focus-visible,
+    input:focus-visible + label {
+      outline: 3px solid rgba(29, 112, 184, .35);
+      outline-offset: 2px;
+    }
+
+    main {
+      width: min(860px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0;
+    }
+
+    .app-shell {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px 26px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      color: #12213d;
+      font-size: 1.8rem;
+      line-height: 1.15;
+      font-weight: 760;
+    }
+
+    .subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: .96rem;
+      line-height: 1.4;
+    }
+
+    .total {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid #b8c9c4;
+      border-radius: 6px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: .82rem;
+      line-height: 1;
+      font-weight: 750;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+      padding: 24px 26px 26px;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    .mode-control {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      width: min(100%, 560px);
+      border: 1px solid #b8c0ca;
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .mode-control input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mode-control label {
+      min-width: 0;
+      padding: 11px 14px;
+      color: #46505d;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      font-size: .94rem;
+      line-height: 1.25;
+      font-weight: 720;
+    }
+
+    .mode-control label + input + label {
+      border-left: 1px solid #b8c0ca;
+    }
+
+    .mode-control input:checked + label {
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .study-card {
+      min-height: 400px;
+      display: grid;
+      grid-template-rows: auto minmax(140px, auto) minmax(104px, auto);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .card-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.2;
+      font-weight: 720;
+    }
+
+    .theme {
+      color: var(--warm);
+    }
+
+    .prompt,
+    .answer {
+      min-width: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 10px;
+      padding: 24px 22px;
+      text-align: center;
+    }
+
+    .prompt-label,
+    .answer-label {
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .prompt-text,
+    .answer-text {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      color: #111827;
+      font-size: 2rem;
+      line-height: 1.16;
+      font-weight: 680;
+    }
+
+    .greek {
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      font-size: 2.75rem;
+      font-weight: 500;
+    }
+
+    .answer-slot {
+      min-height: 104px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .answer {
+      min-height: 104px;
+    }
+
+    .answer-meta {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.3;
+      font-weight: 650;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 740;
+    }
+
+    .primary {
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .primary:hover:not(:disabled) { background: var(--accent-dark); }
+
+    .primary:disabled {
+      color: #708079;
+      background: #dce5e2;
+      cursor: default;
+    }
+
+    .secondary {
+      color: var(--accent-dark);
+      border-color: #aebdb8;
+      background: #fff;
+    }
+
+    .secondary:hover { background: var(--accent-soft); }
+
+    @media (min-width: 700px) {
+      main { padding: 42px 0; }
+      .greek { font-size: 4rem; }
+      .prompt-text:not(.greek),
+      .answer-text:not(.greek) { font-size: 2.35rem; }
+    }
+
+    @media (max-width: 560px) {
+      .app-header {
+        display: grid;
+        padding: 20px 18px 17px;
+      }
+
+      .total { justify-self: start; }
+      .content { padding: 18px; }
+      .mode-control { grid-template-columns: 1fr; }
+
+      .mode-control label + input + label {
+        border-top: 1px solid #b8c0ca;
+        border-left: 0;
+      }
+
+      .study-card {
+        min-height: 380px;
+        grid-template-rows: auto minmax(150px, auto) minmax(110px, auto);
+      }
+
+      .prompt,
+      .answer { padding: 22px 16px; }
+      .greek { font-size: 2.45rem; }
+      .prompt-text,
+      .answer-text { font-size: 1.65rem; }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .answer:not([hidden]) { animation: reveal .18s ease-out; }
+      @keyframes reveal {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="app-shell" aria-labelledby="app-title">
+      <header class="app-header">
+        <div>
+          <h1 id="app-title">Vocabulario no flexivo</h1>
+          <p class="subtitle">Manual de griego clásico · temas 1–14</p>
+        </div>
+        <div class="total" id="total-count">55 fichas</div>
+      </header>
+
+      <div class="content">
+        <fieldset>
+          <legend>Modalidad</legend>
+          <div class="mode-control">
+            <input type="radio" id="mode-gr-es" name="mode" value="gr-es" checked>
+            <label for="mode-gr-es">Griego → castellano</label>
+            <input type="radio" id="mode-es-gr" name="mode" value="es-gr">
+            <label for="mode-es-gr">Castellano → griego</label>
+          </div>
+        </fieldset>
+
+        <article class="study-card" aria-labelledby="prompt-text">
+          <div class="card-topline">
+            <span class="theme" id="theme"></span>
+            <span id="progress"></span>
+          </div>
+
+          <div class="prompt">
+            <span class="prompt-label" id="prompt-label"></span>
+            <div class="prompt-text" id="prompt-text"></div>
+          </div>
+
+          <div class="answer-slot" aria-live="polite">
+            <div class="answer" id="answer" hidden>
+              <span class="answer-label" id="answer-label"></span>
+              <div class="answer-text" id="answer-text"></div>
+              <div class="answer-meta" id="answer-meta"></div>
+            </div>
+          </div>
+        </article>
+
+        <div class="actions">
+          <button type="button" class="primary" id="reveal-button">Mostrar traducción</button>
+          <button type="button" class="secondary" id="next-button">Siguiente término</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const entries = [
+      { greek: "ἀεί", spanish: "siempre", themes: [3], category: "adverbio" },
+      { greek: "οὐ, οὐκ, οὐχ", spanish: "no", themes: [3], category: "partícula negativa" },
+      { greek: "καί", spanish: "y", themes: [3], category: "conjunción" },
+      { greek: "ἔτι", spanish: "todavía", themes: [3], category: "adverbio" },
+      { greek: "εὖ", spanish: "bien, de forma recta", themes: [3, 4], category: "adverbio" },
+      { greek: "πάλιν", spanish: "de nuevo", themes: [3], category: "adverbio" },
+      { greek: "ἤ", spanish: "o", themes: [3], category: "conjunción" },
+      { greek: "ἤ ... ἤ", spanish: "o ... o", themes: [3], category: "conjunción correlativa" },
+
+      { greek: "ἄρτι", spanish: "recientemente, ahora mismo", themes: [4], category: "adverbio" },
+      { greek: "αὔριον", spanish: "mañana", themes: [4], category: "adverbio" },
+      { greek: "ἀλλά", spanish: "pero", themes: [4], category: "conjunción" },
+      { greek: "νῦν", spanish: "ahora", themes: [4], category: "adverbio" },
+      { greek: "ἄγαν", spanish: "demasiado, en exceso", themes: [4, 12], category: "adverbio" },
+      { greek: "καίτοι", spanish: "y sin embargo", themes: [4], category: "conjunción" },
+
+      { greek: "ἐκεῖ", spanish: "allí", themes: [5], category: "adverbio" },
+      { greek: "ἐκεῖθεν", spanish: "desde allí", themes: [5], category: "adverbio" },
+      { greek: "ἐκεῖσε", spanish: "hacia allí", themes: [5], category: "adverbio" },
+
+      { greek: "πάλαι", spanish: "hace tiempo; antiguamente", themes: [6], category: "adverbio" },
+      { greek: "χθές", spanish: "ayer", themes: [6], category: "adverbio" },
+      { greek: "τήμερον", spanish: "hoy", themes: [6], category: "adverbio" },
+
+      { greek: "πρόσθεν", spanish: "delante", themes: [7], category: "adverbio" },
+      { greek: "πρόσω (también πόρρω)", spanish: "hacia adelante", themes: [7], category: "adverbio" },
+      { greek: "μεταξύ", spanish: "en medio", themes: [7], category: "adverbio" },
+      { greek: "ὄπισθεν", spanish: "atrás", themes: [7], category: "adverbio" },
+      { greek: "ὀπίσω", spanish: "hacia atrás", themes: [7], category: "adverbio" },
+
+      { greek: "μάλα", spanish: "muy", themes: [8], category: "adverbio" },
+      { greek: "μᾶλλον", spanish: "más", themes: [8], category: "adverbio" },
+      { greek: "μάλιστα", spanish: "en el más alto grado", themes: [8], category: "adverbio" },
+
+      { greek: "ποτε (enclítica)", spanish: "alguna vez; en otro tiempo", themes: [9], category: "adverbio" },
+      { greek: "τότε", spanish: "entonces", themes: [9], category: "adverbio" },
+      { greek: "ἄλλοτε", spanish: "en otra ocasión", themes: [9], category: "adverbio" },
+      { greek: "οὐδέποτε", spanish: "nunca", themes: [9], category: "adverbio" },
+      { greek: "πώ", spanish: "todavía, aún", themes: [9], category: "adverbio" },
+      { greek: "οὐδέπω", spanish: "todavía no", themes: [9], category: "adverbio" },
+      { greek: "οὐδεπώποτε", spanish: "nunca hasta ahora", themes: [9], category: "adverbio" },
+
+      { greek: "ἐνταῦθα", spanish: "aquí", themes: [10], category: "adverbio" },
+      { greek: "ἐνθάδε", spanish: "hacia aquí", themes: [10], category: "adverbio" },
+      { greek: "δεῦρο", spanish: "hasta aquí", themes: [10], category: "adverbio" },
+      { greek: "ἔνθα καὶ ἔνθα", spanish: "aquí y allí", themes: [10], category: "locución adverbial" },
+      { greek: "ἐντεῦθεν", spanish: "desde aquí", themes: [10], category: "adverbio" },
+
+      { greek: "ἄνω", spanish: "arriba; hacia arriba", themes: [11, 13], category: "adverbio" },
+      { greek: "ἄνωθεν", spanish: "desde arriba", themes: [11, 13], category: "adverbio" },
+      { greek: "κάτω", spanish: "abajo; hacia abajo", themes: [11, 13], category: "adverbio" },
+      { greek: "κάτωθεν", spanish: "desde abajo", themes: [11, 13], category: "adverbio" },
+
+      { greek: "λίαν", spanish: "demasiado, en exceso", themes: [12], category: "adverbio" },
+      { greek: "μόγις", spanish: "apenas, con dificultad", themes: [12], category: "adverbio" },
+      { greek: "μόλις", spanish: "apenas, con dificultad", themes: [12], category: "adverbio" },
+      { greek: "μετρίως", spanish: "en la debida medida", themes: [12], category: "adverbio" },
+
+      { greek: "πέρα(ν)", spanish: "al otro lado; más allá", themes: [14], category: "adverbio / preposición" },
+      { greek: "πέντε", spanish: "cinco", themes: [14], category: "numeral" },
+      { greek: "ἕξ", spanish: "seis", themes: [14], category: "numeral" },
+      { greek: "ἑπτά", spanish: "siete", themes: [14], category: "numeral" },
+      { greek: "ὀκτώ", spanish: "ocho", themes: [14], category: "numeral" },
+      { greek: "ἐννέα", spanish: "nueve", themes: [14], category: "numeral" },
+      { greek: "δέκα", spanish: "diez", themes: [14], category: "numeral" }
+    ];
+
+    const modeInputs = [...document.querySelectorAll('input[name="mode"]')];
+    const theme = document.getElementById("theme");
+    const progress = document.getElementById("progress");
+    const promptLabel = document.getElementById("prompt-label");
+    const promptText = document.getElementById("prompt-text");
+    const answer = document.getElementById("answer");
+    const answerLabel = document.getElementById("answer-label");
+    const answerText = document.getElementById("answer-text");
+    const answerMeta = document.getElementById("answer-meta");
+    const revealButton = document.getElementById("reveal-button");
+    const nextButton = document.getElementById("next-button");
+
+    let deck = [];
+    let deckPosition = 0;
+    let currentEntry = null;
+
+    function currentMode() {
+      return modeInputs.find((input) => input.checked).value;
+    }
+
+    function shuffle(values) {
+      const result = [...values];
+      for (let i = result.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function prepareDeck() {
+      deck = shuffle(entries.map((_, index) => index));
+      deckPosition = 0;
+
+      if (currentEntry && entries[deck[0]] === currentEntry && deck.length > 1) {
+        [deck[0], deck[1]] = [deck[1], deck[0]];
+      }
+    }
+
+    function themeText(themes) {
+      if (themes.length === 1) return `Tema ${themes[0]}`;
+      return `Temas ${themes.slice(0, -1).join(", ")} y ${themes[themes.length - 1]}`;
+    }
+
+    function setGreekClass(element, enabled) {
+      element.classList.toggle("greek", enabled);
+    }
+
+    function hideAnswer() {
+      answer.hidden = true;
+      revealButton.disabled = false;
+      revealButton.textContent = currentMode() === "gr-es"
+        ? "Mostrar traducción"
+        : "Mostrar término griego";
+    }
+
+    function renderCard() {
+      const greekFirst = currentMode() === "gr-es";
+
+      theme.textContent = themeText(currentEntry.themes);
+      progress.textContent = `${deckPosition} / ${entries.length}`;
+      promptLabel.textContent = greekFirst ? "Término griego" : "Traducción";
+      promptText.textContent = greekFirst ? currentEntry.greek : currentEntry.spanish;
+      setGreekClass(promptText, greekFirst);
+
+      answerLabel.textContent = greekFirst ? "Traducción" : "Término griego";
+      answerText.textContent = greekFirst ? currentEntry.spanish : currentEntry.greek;
+      setGreekClass(answerText, !greekFirst);
+      answerMeta.textContent = currentEntry.category;
+      hideAnswer();
+    }
+
+    function nextCard() {
+      if (deckPosition >= deck.length) prepareDeck();
+      currentEntry = entries[deck[deckPosition]];
+      deckPosition += 1;
+      renderCard();
+    }
+
+    function revealAnswer() {
+      if (!currentEntry || !answer.hidden) return;
+      answer.hidden = false;
+      revealButton.disabled = true;
+      revealButton.textContent = "Respuesta mostrada";
+    }
+
+    modeInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        if (input.checked && currentEntry) renderCard();
+      });
+    });
+
+    revealButton.addEventListener("click", revealAnswer);
+    nextButton.addEventListener("click", nextCard);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.target.matches("button, input, label")) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        revealAnswer();
+      }
+      if (event.key === "ArrowRight") nextCard();
+    });
+
+    document.getElementById("total-count").textContent = `${entries.length} fichas`;
+    prepareDeck();
+    nextCard();
+  </script>
+</body>
+</html>
