@@ -36,9 +36,12 @@
     }
 
     button,
-    input { font: inherit; }
+    input,
+    select { font: inherit; }
 
     button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
     input:focus-visible + label {
       outline: 3px solid rgba(29, 112, 184, .35);
       outline-offset: 2px;
@@ -217,6 +220,91 @@
       font-weight: 500;
     }
 
+    .response-panel {
+      display: grid;
+      width: min(100%, 620px);
+      gap: 9px;
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .response-label {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.25;
+      font-weight: 730;
+    }
+
+    .response-input,
+    .translation-select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid #aeb7c3;
+      border-radius: 7px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .response-input { padding: 10px 12px; }
+    .translation-select { padding: 9px 36px 9px 12px; }
+
+    .response-input:disabled,
+    .translation-select:disabled {
+      color: #66717d;
+      background: #edf0f3;
+      cursor: default;
+    }
+
+    .choice-separator {
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1;
+      font-weight: 760;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .check-button { justify-self: start; }
+
+    .feedback {
+      padding: 10px 12px;
+      border: 1px solid;
+      border-radius: 7px;
+      font-size: .9rem;
+      line-height: 1.35;
+      font-weight: 720;
+    }
+
+    .feedback.correct {
+      color: #23583e;
+      border-color: #9ac6ad;
+      background: #eaf6ee;
+    }
+
+    .feedback.incorrect {
+      color: #7b352e;
+      border-color: #ddb0aa;
+      background: #fbefed;
+    }
+
+    .feedback.notice {
+      color: #5a4a20;
+      border-color: #d9c68f;
+      background: #fff8df;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .answer-slot {
       min-height: 104px;
       border-top: 1px solid var(--line);
@@ -302,6 +390,7 @@
       .greek { font-size: 2.45rem; }
       .prompt-text,
       .answer-text { font-size: 1.65rem; }
+      .check-button { width: 100%; }
       .actions { display: grid; grid-template-columns: 1fr; }
       button { width: 100%; }
     }
@@ -346,6 +435,24 @@
           <div class="prompt">
             <span class="prompt-label" id="prompt-label"></span>
             <div class="prompt-text" id="prompt-text"></div>
+            <div class="response-panel" id="response-panel">
+              <label class="response-label" for="typed-answer">Escribe una traducción al castellano</label>
+              <input
+                class="response-input"
+                type="text"
+                id="typed-answer"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+              >
+              <span class="choice-separator">o</span>
+              <label class="sr-only" for="translation-select">Elige una de las 55 traducciones</label>
+              <select class="translation-select" id="translation-select">
+                <option value="">Elige una de las 55 traducciones</option>
+              </select>
+              <button type="button" class="primary check-button" id="check-button">Comprobar respuesta</button>
+              <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+            </div>
           </div>
 
           <div class="answer-slot" aria-live="polite">
@@ -371,16 +478,16 @@
       { greek: "οὐ, οὐκ, οὐχ", spanish: "no", themes: [3], category: "partícula negativa" },
       { greek: "καί", spanish: "y", themes: [3], category: "conjunción" },
       { greek: "ἔτι", spanish: "todavía", themes: [3], category: "adverbio" },
-      { greek: "εὖ", spanish: "bien, de forma recta", themes: [3, 4], category: "adverbio" },
+      { greek: "εὖ", spanish: "bien; de forma recta", themes: [3, 4], category: "adverbio" },
       { greek: "πάλιν", spanish: "de nuevo", themes: [3], category: "adverbio" },
       { greek: "ἤ", spanish: "o", themes: [3], category: "conjunción" },
       { greek: "ἤ ... ἤ", spanish: "o ... o", themes: [3], category: "conjunción correlativa" },
 
-      { greek: "ἄρτι", spanish: "recientemente, ahora mismo", themes: [4], category: "adverbio" },
+      { greek: "ἄρτι", spanish: "recientemente; ahora mismo", themes: [4], category: "adverbio" },
       { greek: "αὔριον", spanish: "mañana", themes: [4], category: "adverbio" },
       { greek: "ἀλλά", spanish: "pero", themes: [4], category: "conjunción" },
       { greek: "νῦν", spanish: "ahora", themes: [4], category: "adverbio" },
-      { greek: "ἄγαν", spanish: "demasiado, en exceso", themes: [4, 12], category: "adverbio" },
+      { greek: "ἄγαν", spanish: "demasiado; en exceso", themes: [4, 12], category: "adverbio" },
       { greek: "καίτοι", spanish: "y sin embargo", themes: [4], category: "conjunción" },
 
       { greek: "ἐκεῖ", spanish: "allí", themes: [5], category: "adverbio" },
@@ -405,7 +512,7 @@
       { greek: "τότε", spanish: "entonces", themes: [9], category: "adverbio" },
       { greek: "ἄλλοτε", spanish: "en otra ocasión", themes: [9], category: "adverbio" },
       { greek: "οὐδέποτε", spanish: "nunca", themes: [9], category: "adverbio" },
-      { greek: "πώ", spanish: "todavía, aún", themes: [9], category: "adverbio" },
+      { greek: "πώ", spanish: "todavía; aún", themes: [9], category: "adverbio" },
       { greek: "οὐδέπω", spanish: "todavía no", themes: [9], category: "adverbio" },
       { greek: "οὐδεπώποτε", spanish: "nunca hasta ahora", themes: [9], category: "adverbio" },
 
@@ -420,9 +527,9 @@
       { greek: "κάτω", spanish: "abajo; hacia abajo", themes: [11, 13], category: "adverbio" },
       { greek: "κάτωθεν", spanish: "desde abajo", themes: [11, 13], category: "adverbio" },
 
-      { greek: "λίαν", spanish: "demasiado, en exceso", themes: [12], category: "adverbio" },
-      { greek: "μόγις", spanish: "apenas, con dificultad", themes: [12], category: "adverbio" },
-      { greek: "μόλις", spanish: "apenas, con dificultad", themes: [12], category: "adverbio" },
+      { greek: "λίαν", spanish: "demasiado; en exceso", themes: [12], category: "adverbio" },
+      { greek: "μόγις", spanish: "apenas; con dificultad", themes: [12], category: "adverbio" },
+      { greek: "μόλις", spanish: "apenas; con dificultad", themes: [12], category: "adverbio" },
       { greek: "μετρίως", spanish: "en la debida medida", themes: [12], category: "adverbio" },
 
       { greek: "πέρα(ν)", spanish: "al otro lado; más allá", themes: [14], category: "adverbio / preposición" },
@@ -443,33 +550,87 @@
     const answerLabel = document.getElementById("answer-label");
     const answerText = document.getElementById("answer-text");
     const answerMeta = document.getElementById("answer-meta");
+    const responsePanel = document.getElementById("response-panel");
+    const typedAnswer = document.getElementById("typed-answer");
+    const translationSelect = document.getElementById("translation-select");
+    const checkButton = document.getElementById("check-button");
+    const feedback = document.getElementById("feedback");
     const revealButton = document.getElementById("reveal-button");
     const nextButton = document.getElementById("next-button");
 
-    let deck = [];
-    let deckPosition = 0;
+    const stats = entries.map(() => ({ attempts: 0, correct: 0 }));
+    let questionNumber = 0;
+    let currentEntryIndex = null;
     let currentEntry = null;
+    let attemptRecorded = false;
+    let lastAttemptCorrect = null;
+    let lastResponse = "";
 
     function currentMode() {
       return modeInputs.find((input) => input.checked).value;
     }
 
-    function shuffle(values) {
-      const result = [...values];
-      for (let i = result.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [result[i], result[j]] = [result[j], result[i]];
-      }
-      return result;
+    function splitTranslations(value) {
+      return value.split(";").map((part) => part.trim()).filter(Boolean);
     }
 
-    function prepareDeck() {
-      deck = shuffle(entries.map((_, index) => index));
-      deckPosition = 0;
+    function normalizeText(value) {
+      return value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase("es")
+        .replace(/[.,:;¡!¿?()[\]"“”]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
-      if (currentEntry && entries[deck[0]] === currentEntry && deck.length > 1) {
-        [deck[0], deck[1]] = [deck[1], deck[0]];
+    function answerIsCorrect(value, entry) {
+      const expected = splitTranslations(entry.spanish).map(normalizeText);
+      const supplied = value
+        .split(/[;,]/)
+        .map(normalizeText)
+        .filter(Boolean);
+
+      return supplied.length > 0 && supplied.every((part) => expected.includes(part));
+    }
+
+    function populateTranslationOptions() {
+      entries
+        .map((entry, index) => ({ index, label: entry.spanish }))
+        .sort((a, b) => (
+          a.label.localeCompare(b.label, "es", { sensitivity: "base" })
+          || a.index - b.index
+        ))
+        .forEach(({ index, label }) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = label;
+          translationSelect.append(option);
+        });
+    }
+
+    function entryWeight(index) {
+      const result = stats[index];
+      const successRate = result.attempts === 0
+        ? 0.5
+        : result.correct / result.attempts;
+
+      return 1 + (1 - successRate) * 4;
+    }
+
+    function chooseEntryIndex(weighted) {
+      if (!weighted) return Math.floor(Math.random() * entries.length);
+
+      const weights = entries.map((_, index) => entryWeight(index));
+      const totalWeight = weights.reduce((total, weight) => total + weight, 0);
+      let target = Math.random() * totalWeight;
+
+      for (let index = 0; index < weights.length; index += 1) {
+        target -= weights[index];
+        if (target < 0) return index;
       }
+
+      return entries.length - 1;
     }
 
     function themeText(themes) {
@@ -481,42 +642,151 @@
       element.classList.toggle("greek", enabled);
     }
 
-    function hideAnswer() {
-      answer.hidden = true;
-      revealButton.disabled = false;
+    function totals() {
+      return stats.reduce((result, entry) => ({
+        attempts: result.attempts + entry.attempts,
+        correct: result.correct + entry.correct
+      }), { attempts: 0, correct: 0 });
+    }
+
+    function updateProgress() {
+      const total = totals();
+      progress.textContent = `Pregunta ${questionNumber} · ${total.correct}/${total.attempts} aciertos`;
+    }
+
+    function currentStatsText() {
+      const result = stats[currentEntryIndex];
+      if (!result.attempts) return currentEntry.category;
+      return `${currentEntry.category} · Este término: ${result.correct}/${result.attempts} aciertos`;
+    }
+
+    function showFeedback(kind, message) {
+      feedback.className = `feedback ${kind}`;
+      feedback.textContent = message;
+      feedback.hidden = false;
+    }
+
+    function showAnswer() {
+      answer.hidden = false;
+      answerMeta.textContent = currentStatsText();
+      revealButton.disabled = true;
       revealButton.textContent = currentMode() === "gr-es"
-        ? "Mostrar traducción"
-        : "Mostrar término griego";
+        ? "Respuesta registrada"
+        : "Respuesta mostrada";
+    }
+
+    function showGradedResult(correct, message) {
+      typedAnswer.disabled = true;
+      translationSelect.disabled = true;
+      checkButton.disabled = true;
+      showFeedback(correct ? "correct" : "incorrect", message);
+      showAnswer();
+    }
+
+    function recordAttempt(correct) {
+      if (attemptRecorded || currentEntryIndex === null) return;
+      stats[currentEntryIndex].attempts += 1;
+      if (correct) stats[currentEntryIndex].correct += 1;
+      attemptRecorded = true;
+      lastAttemptCorrect = correct;
+      updateProgress();
     }
 
     function renderCard() {
       const greekFirst = currentMode() === "gr-es";
 
       theme.textContent = themeText(currentEntry.themes);
-      progress.textContent = `${deckPosition} / ${entries.length}`;
+      updateProgress();
       promptLabel.textContent = greekFirst ? "Término griego" : "Traducción";
       promptText.textContent = greekFirst ? currentEntry.greek : currentEntry.spanish;
       setGreekClass(promptText, greekFirst);
 
-      answerLabel.textContent = greekFirst ? "Traducción" : "Término griego";
+      answerLabel.textContent = greekFirst ? "Traducción correcta" : "Término griego";
       answerText.textContent = greekFirst ? currentEntry.spanish : currentEntry.greek;
       setGreekClass(answerText, !greekFirst);
       answerMeta.textContent = currentEntry.category;
-      hideAnswer();
+      responsePanel.hidden = !greekFirst;
+      answer.hidden = true;
+      feedback.hidden = true;
+
+      typedAnswer.value = lastResponse;
+      typedAnswer.disabled = attemptRecorded;
+      translationSelect.value = "";
+      translationSelect.disabled = attemptRecorded;
+      checkButton.disabled = attemptRecorded;
+
+      revealButton.disabled = false;
+      revealButton.textContent = greekFirst
+        ? "No lo sé / mostrar respuesta"
+        : "Mostrar término griego";
+
+      if (greekFirst && attemptRecorded) {
+        showGradedResult(
+          lastAttemptCorrect,
+          lastAttemptCorrect
+            ? "Correcto. El intento ya está registrado."
+            : "Incorrecto. El intento ya está registrado."
+        );
+      }
     }
 
     function nextCard() {
-      if (deckPosition >= deck.length) prepareDeck();
-      currentEntry = entries[deck[deckPosition]];
-      deckPosition += 1;
+      if (
+        questionNumber > 0
+        && currentMode() === "gr-es"
+        && !attemptRecorded
+      ) {
+        recordAttempt(false);
+      }
+
+      currentEntryIndex = chooseEntryIndex(questionNumber > 0);
+      currentEntry = entries[currentEntryIndex];
+      questionNumber += 1;
+      attemptRecorded = false;
+      lastAttemptCorrect = null;
+      lastResponse = "";
       renderCard();
+    }
+
+    function checkAnswer() {
+      if (!currentEntry || attemptRecorded || currentMode() !== "gr-es") return;
+
+      const selectedIndex = translationSelect.value;
+      const supplied = selectedIndex === ""
+        ? typedAnswer.value.trim()
+        : entries[Number(selectedIndex)].spanish;
+
+      if (!supplied) {
+        showFeedback("notice", "Escribe una respuesta o elige una traducción de la lista.");
+        typedAnswer.focus();
+        return;
+      }
+
+      const correct = answerIsCorrect(supplied, currentEntry);
+      lastResponse = supplied;
+      recordAttempt(correct);
+      showGradedResult(
+        correct,
+        correct
+          ? "Correcto. El acierto se ha registrado."
+          : "Incorrecto. Se ha registrado para que este término tenga más probabilidad de reaparecer."
+      );
     }
 
     function revealAnswer() {
       if (!currentEntry || !answer.hidden) return;
-      answer.hidden = false;
-      revealButton.disabled = true;
-      revealButton.textContent = "Respuesta mostrada";
+
+      if (currentMode() === "gr-es") {
+        lastResponse = typedAnswer.value.trim();
+        recordAttempt(false);
+        showGradedResult(
+          false,
+          "Se ha registrado como no acertada para que este término tenga más probabilidad de reaparecer."
+        );
+        return;
+      }
+
+      showAnswer();
     }
 
     modeInputs.forEach((input) => {
@@ -525,11 +795,29 @@
       });
     });
 
+    typedAnswer.addEventListener("input", () => {
+      if (typedAnswer.value.trim()) translationSelect.value = "";
+    });
+
+    typedAnswer.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    translationSelect.addEventListener("change", () => {
+      if (translationSelect.value !== "") {
+        typedAnswer.value = entries[Number(translationSelect.value)].spanish;
+      }
+    });
+
+    checkButton.addEventListener("click", checkAnswer);
     revealButton.addEventListener("click", revealAnswer);
     nextButton.addEventListener("click", nextCard);
 
     document.addEventListener("keydown", (event) => {
-      if (event.target.matches("button, input, label")) return;
+      if (event.target.matches("button, input, select, label")) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         revealAnswer();
@@ -538,7 +826,7 @@
     });
 
     document.getElementById("total-count").textContent = `${entries.length} fichas`;
-    prepareDeck();
+    populateTranslationOptions();
     nextCard();
   </script>
 </body>
