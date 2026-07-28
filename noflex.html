@@ -228,6 +228,11 @@
       text-align: left;
     }
 
+    .response-fields {
+      display: grid;
+      gap: 9px;
+    }
+
     .response-label {
       color: var(--muted);
       font-size: .82rem;
@@ -236,7 +241,8 @@
     }
 
     .response-input,
-    .translation-select {
+    .translation-select,
+    .greek-term-select {
       width: 100%;
       min-height: 46px;
       border: 1px solid #aeb7c3;
@@ -246,13 +252,20 @@
     }
 
     .response-input { padding: 10px 12px; }
-    .translation-select { padding: 9px 36px 9px 12px; }
+    .translation-select,
+    .greek-term-select { padding: 9px 36px 9px 12px; }
 
     .response-input:disabled,
-    .translation-select:disabled {
+    .translation-select:disabled,
+    .greek-term-select:disabled {
       color: #66717d;
       background: #edf0f3;
       cursor: default;
+    }
+
+    .greek-term-select {
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      font-size: 1.12rem;
     }
 
     .choice-separator {
@@ -436,20 +449,28 @@
             <span class="prompt-label" id="prompt-label"></span>
             <div class="prompt-text" id="prompt-text"></div>
             <div class="response-panel" id="response-panel">
-              <label class="response-label" for="typed-answer">Escribe una traducción al castellano</label>
-              <input
-                class="response-input"
-                type="text"
-                id="typed-answer"
-                autocomplete="off"
-                autocapitalize="none"
-                spellcheck="false"
-              >
-              <span class="choice-separator">o</span>
-              <label class="sr-only" for="translation-select">Elige una de las 55 traducciones</label>
-              <select class="translation-select" id="translation-select">
-                <option value="">Elige una de las 55 traducciones</option>
-              </select>
+              <div class="response-fields" id="spanish-response-fields">
+                <label class="response-label" for="typed-answer">Escribe una traducción al castellano</label>
+                <input
+                  class="response-input"
+                  type="text"
+                  id="typed-answer"
+                  autocomplete="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                >
+                <span class="choice-separator">o</span>
+                <label class="sr-only" for="translation-select">Elige una de las 55 traducciones</label>
+                <select class="translation-select" id="translation-select">
+                  <option value="">Elige una de las 55 traducciones</option>
+                </select>
+              </div>
+              <div class="response-fields" id="greek-response-fields" hidden>
+                <label class="response-label" for="greek-term-select">Elige uno de los 55 términos griegos</label>
+                <select class="greek-term-select" id="greek-term-select">
+                  <option value="">Elige uno de los 55 términos griegos</option>
+                </select>
+              </div>
               <button type="button" class="primary check-button" id="check-button">Comprobar respuesta</button>
               <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
             </div>
@@ -551,8 +572,11 @@
     const answerText = document.getElementById("answer-text");
     const answerMeta = document.getElementById("answer-meta");
     const responsePanel = document.getElementById("response-panel");
+    const spanishResponseFields = document.getElementById("spanish-response-fields");
+    const greekResponseFields = document.getElementById("greek-response-fields");
     const typedAnswer = document.getElementById("typed-answer");
     const translationSelect = document.getElementById("translation-select");
+    const greekTermSelect = document.getElementById("greek-term-select");
     const checkButton = document.getElementById("check-button");
     const feedback = document.getElementById("feedback");
     const revealButton = document.getElementById("reveal-button");
@@ -606,6 +630,21 @@
           option.value = String(index);
           option.textContent = label;
           translationSelect.append(option);
+        });
+    }
+
+    function populateGreekOptions() {
+      entries
+        .map((entry, index) => ({ index, label: entry.greek }))
+        .sort((a, b) => (
+          a.label.localeCompare(b.label, "el", { sensitivity: "base" })
+          || a.index - b.index
+        ))
+        .forEach(({ index, label }) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = label;
+          greekTermSelect.append(option);
         });
     }
 
@@ -670,14 +709,13 @@
       answer.hidden = false;
       answerMeta.textContent = currentStatsText();
       revealButton.disabled = true;
-      revealButton.textContent = currentMode() === "gr-es"
-        ? "Respuesta registrada"
-        : "Respuesta mostrada";
+      revealButton.textContent = "Respuesta registrada";
     }
 
     function showGradedResult(correct, message) {
       typedAnswer.disabled = true;
       translationSelect.disabled = true;
+      greekTermSelect.disabled = true;
       checkButton.disabled = true;
       showFeedback(correct ? "correct" : "incorrect", message);
       showAnswer();
@@ -705,22 +743,24 @@
       answerText.textContent = greekFirst ? currentEntry.spanish : currentEntry.greek;
       setGreekClass(answerText, !greekFirst);
       answerMeta.textContent = currentEntry.category;
-      responsePanel.hidden = !greekFirst;
+      responsePanel.hidden = false;
+      spanishResponseFields.hidden = !greekFirst;
+      greekResponseFields.hidden = greekFirst;
       answer.hidden = true;
       feedback.hidden = true;
 
-      typedAnswer.value = lastResponse;
+      typedAnswer.value = greekFirst ? lastResponse : "";
       typedAnswer.disabled = attemptRecorded;
       translationSelect.value = "";
       translationSelect.disabled = attemptRecorded;
+      greekTermSelect.value = "";
+      greekTermSelect.disabled = attemptRecorded;
       checkButton.disabled = attemptRecorded;
 
       revealButton.disabled = false;
-      revealButton.textContent = greekFirst
-        ? "No lo sé / mostrar respuesta"
-        : "Mostrar término griego";
+      revealButton.textContent = "No lo sé / mostrar respuesta";
 
-      if (greekFirst && attemptRecorded) {
+      if (attemptRecorded) {
         showGradedResult(
           lastAttemptCorrect,
           lastAttemptCorrect
@@ -733,7 +773,6 @@
     function nextCard() {
       if (
         questionNumber > 0
-        && currentMode() === "gr-es"
         && !attemptRecorded
       ) {
         recordAttempt(false);
@@ -749,20 +788,39 @@
     }
 
     function checkAnswer() {
-      if (!currentEntry || attemptRecorded || currentMode() !== "gr-es") return;
+      if (!currentEntry || attemptRecorded) return;
 
-      const selectedIndex = translationSelect.value;
-      const supplied = selectedIndex === ""
-        ? typedAnswer.value.trim()
-        : entries[Number(selectedIndex)].spanish;
+      const greekFirst = currentMode() === "gr-es";
+      const selectedIndex = greekFirst
+        ? translationSelect.value
+        : greekTermSelect.value;
+      const supplied = greekFirst
+        ? (
+          selectedIndex === ""
+            ? typedAnswer.value.trim()
+            : entries[Number(selectedIndex)].spanish
+        )
+        : (
+          selectedIndex === ""
+            ? ""
+            : entries[Number(selectedIndex)].greek
+        );
 
       if (!supplied) {
-        showFeedback("notice", "Escribe una respuesta o elige una traducción de la lista.");
-        typedAnswer.focus();
+        showFeedback(
+          "notice",
+          greekFirst
+            ? "Escribe una respuesta o elige una traducción de la lista."
+            : "Elige un término griego de la lista."
+        );
+        if (greekFirst) typedAnswer.focus();
+        else greekTermSelect.focus();
         return;
       }
 
-      const correct = answerIsCorrect(supplied, currentEntry);
+      const correct = greekFirst
+        ? answerIsCorrect(supplied, currentEntry)
+        : Number(selectedIndex) === currentEntryIndex;
       lastResponse = supplied;
       recordAttempt(correct);
       showGradedResult(
@@ -776,17 +834,12 @@
     function revealAnswer() {
       if (!currentEntry || !answer.hidden) return;
 
-      if (currentMode() === "gr-es") {
-        lastResponse = typedAnswer.value.trim();
-        recordAttempt(false);
-        showGradedResult(
-          false,
-          "Se ha registrado como no acertada para que este término tenga más probabilidad de reaparecer."
-        );
-        return;
-      }
-
-      showAnswer();
+      lastResponse = currentMode() === "gr-es" ? typedAnswer.value.trim() : "";
+      recordAttempt(false);
+      showGradedResult(
+        false,
+        "Se ha registrado como no acertada para que este término tenga más probabilidad de reaparecer."
+      );
     }
 
     modeInputs.forEach((input) => {
@@ -827,6 +880,7 @@
 
     document.getElementById("total-count").textContent = `${entries.length} fichas`;
     populateTranslationOptions();
+    populateGreekOptions();
     nextCard();
   </script>
 </body>
