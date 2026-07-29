@@ -217,7 +217,7 @@
       display: none;
       border: 1px solid var(--line);
       border-radius: 8px;
-      overflow: hidden;
+      overflow-x: auto;
       background: #fff;
     }
 
@@ -273,6 +273,14 @@
     td:nth-child(2), th:nth-child(2),
     td:nth-child(3), th:nth-child(3) { width: 38%; }
 
+    table.multi-column td:first-child,
+    table.multi-column th:first-child { width: 22%; }
+
+    table.multi-column td:not(:first-child),
+    table.multi-column th:not(:first-child) { width: auto; }
+
+    table.multi-column { min-width: 720px; }
+
     .case {
       text-align: left;
       color: var(--ink);
@@ -298,7 +306,7 @@
     <section class="shell" aria-live="polite">
       <header>
         <h1>Declinaciones y verbos</h1>
-        <p class="sub">Entrada aleatoria del diccionario slim y del vocabulario flexivo de los temas 1-14 del manual.</p>
+        <p class="sub">Entrada aleatoria del vocabulario flexivo y de las tablas de tercera declinación y verbos.</p>
       </header>
 
       <div class="content">
@@ -331,7 +339,7 @@
           </div>
           <table>
             <thead>
-              <tr>
+              <tr id="declensionHeadRow">
                 <th id="caseHeader" class="case">Caso</th>
                 <th>Singular</th>
                 <th>Plural</th>
@@ -483,7 +491,819 @@
         "target": 9
     }
 ];
-    const ENTRIES = [
+
+    const ENTRIES = [];
+
+    /*
+     * Suplemento comprobado con:
+     * - tablas_tercera_declinacion_griego1.docx
+     * - tablas_verbos_formateadas.docx
+     *
+     * Se mantiene el vocabulario original y se añaden únicamente los modelos
+     * ausentes o los paradigmas (tiempo/voz) que no estaban representados.
+     */
+    const SUPPLEMENT_CASES = ["Nominativo", "Vocativo", "Acusativo", "Genitivo", "Dativo"];
+    const SUPPLEMENT_ARTICLES = {
+      m: {
+        singular: ["ὁ", "ὦ", "τὸν", "τοῦ", "τῷ"],
+        plural: ["οἱ", "ὦ", "τοὺς", "τῶν", "τοῖς"]
+      },
+      f: {
+        singular: ["ἡ", "ὦ", "τὴν", "τῆς", "τῇ"],
+        plural: ["αἱ", "ὦ", "τὰς", "τῶν", "ταῖς"]
+      },
+      n: {
+        singular: ["τὸ", "ὦ", "τὸ", "τοῦ", "τῷ"],
+        plural: ["τὰ", "ὦ", "τὰ", "τῶν", "τοῖς"]
+      }
+    };
+
+    function supplementalNominalForms(gender, singular, plural = []) {
+      const articles = SUPPLEMENT_ARTICLES[gender];
+      return {
+        singular: singular.map((form, index) => [SUPPLEMENT_CASES[index], articles.singular[index], form]),
+        plural: plural.map((form, index) => [SUPPLEMENT_CASES[index], articles.plural[index], form])
+      };
+    }
+
+    let supplementalThirdNounId = 28;
+    function addThirdNoun(lemma, morphology, translation, gender, singular, plural = []) {
+      ENTRIES.push({
+        id: `3_noun-${String(supplementalThirdNounId++).padStart(3, "0")}`,
+        lemma,
+        morphology,
+        translation,
+        partOfSpeech: "sustantivo",
+        declension: "Tercera declinación",
+        subtype: "sustantivo de tercera declinación · modelo de las tablas",
+        subtypeId: "3_noun",
+        inBasicVocab: false,
+        forms: supplementalNominalForms(gender, singular, plural)
+      });
+    }
+
+    addThirdNoun("φλέψ", "φλεβός ἡ", "vena", "f",
+      ["φλέψ", "φλέψ", "φλέβα", "φλεβός", "φλεβί"],
+      ["φλέβες", "φλέβες", "φλέβας", "φλεβῶν", "φλεψί(ν)"]);
+    addThirdNoun("λαμπάς", "λαμπάδος ἡ", "lámpara", "f",
+      ["λαμπάς", "λαμπάς", "λαμπάδα", "λαμπάδος", "λαμπάδι"],
+      ["λαμπάδες", "λαμπάδες", "λαμπάδας", "λαμπάδων", "λαμπάσι(ν)"]);
+    addThirdNoun("ἀηδών", "ἀηδόνος ἡ", "ruiseñor", "f",
+      ["ἀηδών", "ἀηδόν", "ἀηδόνα", "ἀηδόνος", "ἀηδόνι"],
+      ["ἀηδόνες", "ἀηδόνες", "ἀηδόνας", "ἀηδόνων", "ἀηδόσι(ν)"]);
+    addThirdNoun("ῥίς", "ῥινός ἡ", "nariz", "f",
+      ["ῥίς", "ῥίς", "ῥίνα", "ῥινός", "ῥινί"],
+      ["ῥίνες", "ῥίνες", "ῥίνας", "ῥινῶν", "ῥισί(ν)"]);
+    addThirdNoun("γίγας", "γίγαντος ὁ", "gigante", "m",
+      ["γίγας", "γίγαν", "γίγαντα", "γίγαντος", "γίγαντι"],
+      ["γίγαντες", "γίγαντες", "γίγαντας", "γιγάντων", "γίγασι(ν)"]);
+    addThirdNoun("ὀδούς", "ὀδόντος ὁ", "diente", "m",
+      ["ὀδούς", "ὀδούς", "ὀδόντα", "ὀδόντος", "ὀδόντι"],
+      ["ὀδόντες", "ὀδόντες", "ὀδόντας", "ὀδόντων", "ὀδοῦσι(ν)"]);
+    addThirdNoun("γέρων", "γέροντος ὁ", "anciano", "m",
+      ["γέρων", "γέρον", "γέροντα", "γέροντος", "γέροντι"],
+      ["γέροντες", "γέροντες", "γέροντας", "γερόντων", "γέρουσι(ν)"]);
+    addThirdNoun("ῥήτωρ", "ῥήτορος ὁ", "orador", "m",
+      ["ῥήτωρ", "ῥῆτορ", "ῥήτορα", "ῥήτορος", "ῥήτορι"],
+      ["ῥήτορες", "ῥήτορες", "ῥήτορας", "ῥητόρων", "ῥήτορσι(ν)"]);
+    addThirdNoun("θήρ", "θηρός ὁ", "fiera", "m",
+      ["θήρ", "θήρ", "θῆρα", "θηρός", "θηρί"],
+      ["θῆρες", "θῆρες", "θῆρας", "θηρῶν", "θηρσί(ν)"]);
+    addThirdNoun("νέκταρ", "νέκταρος τό", "néctar", "n",
+      ["νέκταρ", "νέκταρ", "νέκταρ", "νέκταρος", "νέκταρι"]);
+    addThirdNoun("πατήρ", "πατρός ὁ", "padre", "m",
+      ["πατήρ", "πάτερ", "πατέρα", "πατρός", "πατρί"],
+      ["πατέρες", "πατέρες", "πατέρας", "πατέρων", "πατράσι(ν)"]);
+    addThirdNoun("ἀνήρ", "ἀνδρός ὁ", "varón; hombre", "m",
+      ["ἀνήρ", "ἄνερ", "ἄνδρα", "ἀνδρός", "ἀνδρί"],
+      ["ἄνδρες", "ἄνδρες", "ἄνδρας", "ἀνδρῶν", "ἀνδράσι(ν)"]);
+    addThirdNoun("γένος", "γένους τό", "raza; linaje", "n",
+      ["γένος", "γένος", "γένος", "γένους", "γένει"],
+      ["γένη", "γένη", "γένη", "γενῶν", "γένεσι(ν)"]);
+    addThirdNoun("τριήρης", "τριήρους ἡ", "trirreme", "f",
+      ["τριήρης", "τριῆρες", "τριήρη", "τριήρους", "τριήρει"],
+      ["τριήρεις", "τριήρεις", "τριήρεις", "τριήρων", "τριήρεσι(ν)"]);
+    addThirdNoun("Διογένης", "Διογένους ὁ", "Diógenes", "m",
+      ["Διογένης", "Διόγενες", "Διογένη", "Διογένους", "Διογένει"]);
+    addThirdNoun("Περικλῆς", "Περικλέους ὁ", "Pericles", "m",
+      ["Περικλῆς", "Περίκλεις", "Περικλέα", "Περικλέους", "Περικλεῖ"]);
+    addThirdNoun("κρέας", "κρέως τό", "carne", "n",
+      ["κρέας", "κρέας", "κρέας", "κρέως", "κρέᾳ"],
+      ["κρέα", "κρέα", "κρέα", "κρεῶν", "κρέασι(ν)"]);
+    addThirdNoun("βασιλεύς", "βασιλέως ὁ", "rey", "m",
+      ["βασιλεύς", "βασιλεῦ", "βασιλέα", "βασιλέως", "βασιλεῖ"],
+      ["βασιλεῖς", "βασιλεῖς", "βασιλέας", "βασιλέων", "βασιλεῦσι(ν)"]);
+    addThirdNoun("γραῦς", "γραός ἡ", "vieja", "f",
+      ["γραῦς", "γραῦ", "γραῦν", "γραός", "γραΐ"],
+      ["γραῖες", "γραῖες", "γραῦς", "γραῶν", "γραυσί(ν)"]);
+    addThirdNoun("βοῦς", "βοός ὁ", "buey", "m",
+      ["βοῦς", "βοῦ", "βοῦν", "βοός", "βοΐ"],
+      ["βόες", "βόες", "βοῦς", "βοῶν", "βουσί(ν)"]);
+    addThirdNoun("πειθώ", "πειθοῦς ἡ", "persuasión", "f",
+      ["πειθώ", "πειθοῖ", "πειθώ", "πειθοῦς", "πειθοῖ"]);
+    addThirdNoun("ἥρως", "ἥρωος ὁ", "héroe; semidiós", "m",
+      ["ἥρως", "ἥρως", "ἥρωα / ἥρω", "ἥρωος / ἥρω", "ἥρωι / ἥρῳ"],
+      ["ἥρωες / ἥρως", "ἥρωες / ἥρως", "ἥρωας / ἥρως", "ἡρώων", "ἥρωσι(ν)"]);
+    addThirdNoun("ὄϊς", "οἰός ἡ", "oveja", "f",
+      ["ὄϊς", "οἶ", "ὄϊν", "οἰός", "οἰΐ"],
+      ["οἶες", "οἶες", "οἶς", "οἰῶν", "οἰσί(ν)"]);
+    addThirdNoun("ἰχθύς", "ἰχθύος ὁ", "pez", "m",
+      ["ἰχθύς", "ἰχθύ", "ἰχθύν", "ἰχθύος", "ἰχθύϊ"],
+      ["ἰχθύες", "ἰχθύες", "ἰχθύς", "ἰχθύων", "ἰχθύσι(ν)"]);
+    addThirdNoun("πόλις", "πόλεως ἡ", "ciudad", "f",
+      ["πόλις", "πόλι", "πόλιν", "πόλεως", "πόλει"],
+      ["πόλεις", "πόλεις", "πόλεις", "πόλεων", "πόλεσι(ν)"]);
+    addThirdNoun("πῆχυς", "πήχεως ὁ", "codo", "m",
+      ["πῆχυς", "πῆχυ", "πῆχυν", "πήχεως", "πήχει"],
+      ["πήχεις", "πήχεις", "πήχεις", "πήχεων", "πήχεσι(ν)"]);
+    addThirdNoun("ἄστυ", "ἄστεως τό", "villa; ciudad", "n",
+      ["ἄστυ", "ἄστυ", "ἄστυ", "ἄστεως", "ἄστει"],
+      ["ἄστη", "ἄστη", "ἄστη", "ἄστεων", "ἄστεσι(ν)"]);
+    addThirdNoun("Ζεύς", "Διός ὁ", "Zeus; Júpiter", "m",
+      ["Ζεύς", "Ζεῦ", "Δία", "Διός", "Διί"]);
+    addThirdNoun("γυνή", "γυναικός ἡ", "mujer", "f",
+      ["γυνή", "γύναι", "γυναῖκα", "γυναικός", "γυναικί"],
+      ["γυναῖκες", "γυναῖκες", "γυναῖκας", "γυναικῶν", "γυναιξί(ν)"]);
+    addThirdNoun("κύων", "κυνός ὁ", "perro", "m",
+      ["κύων", "κύον", "κύνα", "κυνός", "κυνί"],
+      ["κύνες", "κύνες", "κύνας", "κυνῶν", "κυσί(ν)"]);
+    addThirdNoun("ναῦς", "νεώς ἡ", "nave", "f",
+      ["ναῦς", "ναῦ", "ναῦν", "νεώς", "νηΐ"],
+      ["νῆες", "νῆες", "ναῦς", "νεῶν", "ναυσί(ν)"]);
+    addThirdNoun("μάρτυς", "μάρτυρος ὁ", "testigo", "m",
+      ["μάρτυς", "μάρτυ", "μάρτυρα", "μάρτυρος", "μάρτυρι"],
+      ["μάρτυρες", "μάρτυρες", "μάρτυρας", "μαρτύρων", "μάρτυσι(ν)"]);
+    addThirdNoun("πούς", "ποδός ὁ", "pie", "m",
+      ["πούς", "πούς", "πόδα", "ποδός", "ποδί"],
+      ["πόδες", "πόδες", "πόδας", "ποδῶν", "ποσί(ν)"]);
+    addThirdNoun("νύξ", "νυκτός ἡ", "noche", "f",
+      ["νύξ", "νύξ", "νύκτα", "νυκτός", "νυκτί"],
+      ["νύκτες", "νύκτες", "νύκτας", "νυκτῶν", "νυξί(ν)"]);
+    addThirdNoun("θρίξ", "τριχός ἡ", "cabello", "f",
+      ["θρίξ", "θρίξ", "τρίχα", "τριχός", "τριχί"],
+      ["τρίχες", "τρίχες", "τρίχας", "τριχῶν", "θριξί(ν)"]);
+    addThirdNoun("γάλα", "γάλακτος τό", "leche", "n",
+      ["γάλα", "γάλα", "γάλα", "γάλακτος", "γάλακτι"],
+      ["γάλατα", "γάλατα", "γάλατα", "γαλάτων", "γάλαξι(ν)"]);
+    addThirdNoun("γόνυ", "γόνατος τό", "rodilla", "n",
+      ["γόνυ", "γόνυ", "γόνυ", "γόνατος", "γόνατι"],
+      ["γόνατα", "γόνατα", "γόνατα", "γονάτων", "γόνασι(ν)"]);
+    addThirdNoun("δόρυ", "δόρατος τό", "lanza", "n",
+      ["δόρυ", "δόρυ", "δόρυ", "δόρατος", "δόρατι"],
+      ["δόρατα", "δόρατα", "δόρατα", "δοράτων", "δόρασι(ν)"]);
+    addThirdNoun("ὕδωρ", "ὕδατος τό", "agua", "n",
+      ["ὕδωρ", "ὕδωρ", "ὕδωρ", "ὕδατος", "ὕδατι"],
+      ["ὕδατα", "ὕδατα", "ὕδατα", "ὑδάτων", "ὕδασι(ν)"]);
+    addThirdNoun("οὖς", "ὠτός τό", "oreja", "n",
+      ["οὖς", "οὖς", "οὖς", "ὠτός", "ὠτί"],
+      ["ὦτα", "ὦτα", "ὦτα", "ὤτων", "ὠσί(ν)"]);
+    addThirdNoun("φῶς", "φωτός τό", "luz", "n",
+      ["φῶς", "φῶς", "φῶς", "φωτός", "φωτί"],
+      ["φῶτα", "φῶτα", "φῶτα", "φώτων", "φωσί(ν)"]);
+
+    const GENDER_ROW_LABELS = [
+      "Sing. · N/V", "Sing. · A", "Sing. · G", "Sing. · D",
+      "Plur. · N/V", "Plur. · A", "Plur. · G", "Plur. · D"
+    ];
+
+    function threeGenderTable(masculine, feminine, neuter) {
+      return {
+        headers: ["Número y caso", "Masculino", "Femenino", "Neutro"],
+        rows: GENDER_ROW_LABELS.map((label, index) => [
+          label, masculine[index], feminine[index], neuter[index]
+        ])
+      };
+    }
+
+    function twoGenderTable(common, neuter) {
+      return {
+        headers: ["Número y caso", "Masculino / femenino", "Neutro"],
+        rows: GENDER_ROW_LABELS.map((label, index) => [label, common[index], neuter[index]])
+      };
+    }
+
+    const PENDING_THIRD_ADJECTIVE_TABLES = new Map();
+    function setTableForLemma(lemma, table) {
+      const entry = ENTRIES.find(item => item.lemma === lemma && item.subtypeId === "3_adj");
+      if (entry) {
+        entry.table = table;
+      } else {
+        PENDING_THIRD_ADJECTIVE_TABLES.set(lemma, table);
+      }
+    }
+
+    setTableForLemma("εὐδαίμων", twoGenderTable(
+      ["εὐδαίμων", "εὐδαίμονα", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονες", "εὐδαίμονας", "εὐδαιμόνων", "εὐδαίμοσι(ν)"],
+      ["εὔδαιμον", "εὔδαιμον", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονα", "εὐδαίμονα", "εὐδαιμόνων", "εὐδαίμοσι(ν)"]
+    ));
+    setTableForLemma("μέλας", threeGenderTable(
+      ["μέλας", "μέλανα", "μέλανος", "μέλανι", "μέλανες", "μέλανας", "μελάνων", "μέλασι(ν)"],
+      ["μέλαινα", "μέλαιναν", "μελαίνης", "μελαίνῃ", "μέλαιναι", "μελαίνας", "μελαινῶν", "μελαίναις"],
+      ["μέλαν", "μέλαν", "μέλανος", "μέλανι", "μέλανα", "μέλανα", "μελάνων", "μέλασι(ν)"]
+    ));
+    setTableForLemma("ἄκων", threeGenderTable(
+      ["ἄκων", "ἄκοντα", "ἄκοντος", "ἄκοντι", "ἄκοντες", "ἄκοντας", "ἀκόντων", "ἄκουσι(ν)"],
+      ["ἄκουσα", "ἄκουσαν", "ἀκούσης", "ἀκούσῃ", "ἄκουσαι", "ἀκούσας", "ἀκουσῶν", "ἀκούσαις"],
+      ["ἄκον", "ἄκον", "ἄκοντος", "ἄκοντι", "ἄκοντα", "ἄκοντα", "ἀκόντων", "ἄκουσι(ν)"]
+    ));
+    setTableForLemma("πᾶς", threeGenderTable(
+      ["πᾶς", "πάντα", "παντός", "παντί", "πάντες", "πάντας", "πάντων", "πᾶσι(ν)"],
+      ["πᾶσα", "πᾶσαν", "πάσης", "πάσῃ", "πᾶσαι", "πάσας", "πασῶν", "πάσαις"],
+      ["πᾶν", "πᾶν", "παντός", "παντί", "πάντα", "πάντα", "πάντων", "πᾶσι(ν)"]
+    ));
+
+    ENTRIES.push({
+      id: "3_adj-010",
+      lemma: "ἀληθής",
+      morphology: "ἀληθές",
+      translation: "verdadero",
+      partOfSpeech: "adjetivo",
+      declension: "Tercera declinación",
+      subtype: "adjetivo de tema en -ες",
+      subtypeId: "3_adj",
+      inBasicVocab: false,
+      forms: supplementalNominalForms("m",
+        ["ἀληθής", "ἀληθές", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ"],
+        ["ἀληθεῖς", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"]),
+      table: twoGenderTable(
+        ["ἀληθής", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"],
+        ["ἀληθές", "ἀληθές", "ἀληθοῦς", "ἀληθεῖ", "ἀληθῆ", "ἀληθῆ", "ἀληθῶν", "ἀληθέσι(ν)"]
+      )
+    });
+
+    const thirdNounSubtype = SUBTYPES.find(item => item.id === "3_noun");
+    thirdNounSubtype.count = thirdNounSubtype.target = 68;
+    const thirdAdjectiveSubtype = SUBTYPES.find(item => item.id === "3_adj");
+    thirdAdjectiveSubtype.count = thirdAdjectiveSubtype.target = 10;
+
+    const SUPPLEMENTAL_SUBTYPES = [
+      {
+        id: "verb_imperfect_active",
+        declension: "Imperfecto de indicativo",
+        subtype: "voz activa",
+        description: "imperfecto activo de indicativo",
+        count: 12,
+        target: 12
+      },
+      {
+        id: "verb_present_middle",
+        declension: "Presente de indicativo",
+        subtype: "voz media",
+        description: "presente medio de indicativo",
+        count: 9,
+        target: 9
+      },
+      {
+        id: "verb_imperfect_middle",
+        declension: "Imperfecto de indicativo",
+        subtype: "voz media",
+        description: "imperfecto medio de indicativo",
+        count: 8,
+        target: 8
+      },
+      {
+        id: "verb_aorist_sigmatic_active",
+        declension: "Aoristo sigmático",
+        subtype: "voz activa",
+        description: "aoristo sigmático activo",
+        count: 11,
+        target: 11
+      },
+      {
+        id: "verb_aorist_sigmatic_middle",
+        declension: "Aoristo sigmático",
+        subtype: "voz media",
+        description: "aoristo sigmático medio",
+        count: 1,
+        target: 1
+      },
+      {
+        id: "verb_aorist_radical_active",
+        declension: "Aoristo radical",
+        subtype: "voz activa",
+        description: "aoristo radical temático o atemático",
+        count: 6,
+        target: 6
+      },
+      {
+        id: "verb_aorist_radical_middle",
+        declension: "Aoristo radical temático",
+        subtype: "voz media",
+        description: "aoristo radical temático medio",
+        count: 1,
+        target: 1
+      },
+      {
+        id: "verb_aorist_eta_theta",
+        declension: "Aoristo en -η / -θη",
+        subtype: "radical o pasivo",
+        description: "aoristo radical en -η o pasivo en -θη",
+        count: 2,
+        target: 2
+      },
+      {
+        id: "infinitive_present",
+        declension: "Presente de infinitivo",
+        subtype: "voz activa y media",
+        description: "infinitivos presentes de los modelos verbales",
+        count: 11,
+        target: 11
+      },
+      {
+        id: "participle_present",
+        declension: "Participio de presente",
+        subtype: "voz activa o media",
+        description: "participios presentes en los tres géneros",
+        count: 19,
+        target: 19
+      },
+      {
+        id: "participle_future",
+        declension: "Participio de futuro",
+        subtype: "voz activa",
+        description: "participio futuro activo anticipado por las tablas",
+        count: 1,
+        target: 1
+      },
+      {
+        id: "participle_aorist",
+        declension: "Participio de aoristo",
+        subtype: "voz activa, media o pasiva",
+        description: "participios de aoristo en los tres géneros",
+        count: 5,
+        target: 5
+      }
+    ];
+    SUBTYPES.push(...SUPPLEMENTAL_SUBTYPES);
+
+    const presentVerbSubtype = SUBTYPES.find(item => item.id === "verb_present");
+    presentVerbSubtype.count = presentVerbSubtype.target = 166;
+
+    const supplementalVerbCounters = {};
+    function finiteVerbForms(forms) {
+      return {
+        singular: [
+          ["1.ª persona", "", forms[0]],
+          ["2.ª persona", "", forms[1]],
+          ["3.ª persona", "", forms[2]]
+        ],
+        plural: [
+          ["1.ª persona", "", forms[3]],
+          ["2.ª persona", "", forms[4]],
+          ["3.ª persona", "", forms[5]]
+        ]
+      };
+    }
+
+    function addFiniteVerb(subtypeId, lemma, morphology, translation, forms) {
+      supplementalVerbCounters[subtypeId] = (supplementalVerbCounters[subtypeId] || 0) + 1;
+      const subtype = SUBTYPES.find(item => item.id === subtypeId);
+      ENTRIES.push({
+        id: `${subtypeId}-table-${String(supplementalVerbCounters[subtypeId]).padStart(2, "0")}`,
+        lemma,
+        morphology,
+        translation,
+        partOfSpeech: "verbo",
+        declension: subtype.declension,
+        subtype: subtype.subtype,
+        subtypeId,
+        inBasicVocab: false,
+        forms: finiteVerbForms(forms)
+      });
+    }
+
+    // Presentes activos que figuraban en las tablas y no en el vocabulario base.
+    addFiniteVerb("verb_present", "ποιέω", "presente indicativo activo; contracto en -έω", "hacer",
+      ["ποιῶ", "ποιεῖς", "ποιεῖ", "ποιοῦμεν", "ποιεῖτε", "ποιοῦσι(ν)"]);
+    addFiniteVerb("verb_present", "φημί", "presente indicativo activo; atemático radical", "decir; afirmar",
+      ["φημί", "φῄς", "φησί(ν)", "φαμέν", "φατέ", "φασί(ν)"]);
+    addFiniteVerb("verb_present", "εἶμι", "presente indicativo activo; atemático radical", "ir",
+      ["εἶμι", "εἶ", "εἶσι(ν)", "ἴμεν", "ἴτε", "ἴασι(ν)"]);
+    addFiniteVerb("verb_present", "δάμνημι", "presente indicativo activo; atemático nasal", "dominar",
+      ["δάμνημι", "δάμνης", "δάμνησι(ν)", "δάμναμεν", "δάμνατε", "δαμνᾶσι(ν)"]);
+    addFiniteVerb("verb_present", "δίδωμι", "presente indicativo activo; atemático reduplicado", "dar",
+      ["δίδωμι", "δίδως", "δίδωσι(ν)", "δίδομεν", "δίδοτε", "διδόασι(ν)"]);
+    addFiniteVerb("verb_present", "τίθημι", "presente indicativo activo; atemático reduplicado", "poner",
+      ["τίθημι", "τίθης", "τίθησι(ν)", "τίθεμεν", "τίθετε", "τιθέασι(ν)"]);
+    addFiniteVerb("verb_present", "ἵστημι", "presente indicativo activo; atemático reduplicado", "colocar; poner en pie",
+      ["ἵστημι", "ἵστης", "ἵστησι(ν)", "ἵσταμεν", "ἵστατε", "ἱστᾶσι(ν)"]);
+    addFiniteVerb("verb_present", "ἵημι", "presente indicativo activo; atemático reduplicado", "lanzar",
+      ["ἵημι", "ἵης", "ἵησι(ν)", "ἵεμεν", "ἵετε", "ἱᾶσι(ν)"]);
+
+    // Imperfecto de indicativo activo.
+    addFiniteVerb("verb_imperfect_active", "λέγω", "imperfecto indicativo activo; temático", "decir",
+      ["ἔλεγον", "ἔλεγες", "ἔλεγε(ν)", "ἐλέγομεν", "ἐλέγετε", "ἔλεγον"]);
+    addFiniteVerb("verb_imperfect_active", "τιμάω", "imperfecto indicativo activo; contracto en -άω", "honrar",
+      ["ἐτίμων", "ἐτίμας", "ἐτίμα", "ἐτιμῶμεν", "ἐτιμᾶτε", "ἐτίμων"]);
+    addFiniteVerb("verb_imperfect_active", "ποιέω", "imperfecto indicativo activo; contracto en -έω", "hacer",
+      ["ἐποίουν", "ἐποίεις", "ἐποίει", "ἐποιοῦμεν", "ἐποιεῖτε", "ἐποίουν"]);
+    addFiniteVerb("verb_imperfect_active", "δηλόω", "imperfecto indicativo activo; contracto en -όω", "mostrar",
+      ["ἐδήλουν", "ἐδήλους", "ἐδήλου", "ἐδηλοῦμεν", "ἐδηλοῦτε", "ἐδήλουν"]);
+    addFiniteVerb("verb_imperfect_active", "φημί", "imperfecto indicativo activo; atemático radical", "decir; afirmar",
+      ["ἔφην", "ἔφησθα", "ἔφη", "ἔφαμεν", "ἔφατε", "ἔφασαν"]);
+    addFiniteVerb("verb_imperfect_active", "εἶμι", "imperfecto indicativo activo; atemático radical", "ir",
+      ["ᾔειν", "ᾔεις", "ᾔει", "ᾖμεν", "ᾖτε", "ᾖσαν"]);
+    addFiniteVerb("verb_imperfect_active", "δείκνυμι", "imperfecto indicativo activo; atemático nasal", "mostrar",
+      ["ἐδείκνυν", "ἐδείκνυς", "ἐδείκνυ", "ἐδείκνυμεν", "ἐδείκνυτε", "ἐδείκνυσαν"]);
+    addFiniteVerb("verb_imperfect_active", "δάμνημι", "imperfecto indicativo activo; atemático nasal", "dominar",
+      ["ἐδάμνην", "ἐδάμνης", "ἐδάμνη", "ἐδάμναμεν", "ἐδάμνατε", "ἐδάμνασαν"]);
+    addFiniteVerb("verb_imperfect_active", "δίδωμι", "imperfecto indicativo activo; atemático reduplicado", "dar",
+      ["ἐδίδουν", "ἐδίδους", "ἐδίδου", "ἐδίδομεν", "ἐδίδοτε", "ἐδίδοσαν"]);
+    addFiniteVerb("verb_imperfect_active", "τίθημι", "imperfecto indicativo activo; atemático reduplicado", "poner",
+      ["ἐτίθην", "ἐτίθεις", "ἐτίθει", "ἐτίθεμεν", "ἐτίθετε", "ἐτίθεσαν"]);
+    addFiniteVerb("verb_imperfect_active", "ἵστημι", "imperfecto indicativo activo; atemático reduplicado", "colocar; poner en pie",
+      ["ἵστην", "ἵστης", "ἵστη", "ἵσταμεν", "ἵστατε", "ἵστασαν"]);
+    addFiniteVerb("verb_imperfect_active", "ἵημι", "imperfecto indicativo activo; atemático reduplicado", "lanzar",
+      ["ἵην", "ἵεις", "ἵει", "ἵεμεν", "ἵετε", "ἵεσαν"]);
+
+    // Presente de indicativo medio.
+    addFiniteVerb("verb_present_middle", "λύω", "presente indicativo medio; temático", "soltar; desatar",
+      ["λύομαι", "λύει", "λύεται", "λυόμεθα", "λύεσθε", "λύονται"]);
+    addFiniteVerb("verb_present_middle", "τιμάω", "presente indicativo medio; contracto en -άω", "honrar para sí; hacerse honrar",
+      ["τιμῶμαι", "τιμᾷ", "τιμᾶται", "τιμώμεθα", "τιμᾶσθε", "τιμῶνται"]);
+    addFiniteVerb("verb_present_middle", "ποιέω", "presente indicativo medio; contracto en -έω", "hacer para sí",
+      ["ποιοῦμαι", "ποιεῖ", "ποιεῖται", "ποιούμεθα", "ποιεῖσθε", "ποιοῦνται"]);
+    addFiniteVerb("verb_present_middle", "δηλόω", "presente indicativo medio; contracto en -όω", "mostrar para sí",
+      ["δηλοῦμαι", "δηλοῖ", "δηλοῦται", "δηλούμεθα", "δηλοῦσθε", "δηλοῦνται"]);
+    addFiniteVerb("verb_present_middle", "δίδωμι", "presente indicativo medio; atemático", "dar para sí",
+      ["δίδομαι", "δίδοσαι", "δίδοται", "διδόμεθα", "δίδοσθε", "δίδονται"]);
+    addFiniteVerb("verb_present_middle", "τίθημι", "presente indicativo medio; atemático", "poner para sí",
+      ["τίθεμαι", "τίθεσαι", "τίθεται", "τιθέμεθα", "τίθεσθε", "τίθενται"]);
+    addFiniteVerb("verb_present_middle", "ἵστημι", "presente indicativo medio; atemático", "colocarse; ponerse en pie",
+      ["ἵσταμαι", "ἵστασαι", "ἵσταται", "ἱστάμεθα", "ἵστασθε", "ἵστανται"]);
+    addFiniteVerb("verb_present_middle", "ἵημι", "presente indicativo medio; atemático", "lanzar para sí",
+      ["ἵεμαι", "ἵεσαι", "ἵεται", "ἱέμεθα", "ἵεσθε", "ἵενται"]);
+    addFiniteVerb("verb_present_middle", "δείκνυμι", "presente indicativo medio; atemático", "mostrar para sí",
+      ["δείκνυμαι", "δείκνυσαι", "δείκνυται", "δεικνύμεθα", "δείκνυσθε", "δείκνυνται"]);
+
+    // Imperfecto de indicativo medio.
+    addFiniteVerb("verb_imperfect_middle", "λύω", "imperfecto indicativo medio; temático", "soltar para sí; desatarse",
+      ["ἐλυόμην", "ἐλύου", "ἐλύετο", "ἐλυόμεθα", "ἐλύεσθε", "ἐλύοντο"]);
+    addFiniteVerb("verb_imperfect_middle", "τιμάω", "imperfecto indicativo medio; contracto en -άω", "honrar para sí",
+      ["ἐτιμώμην", "ἐτιμῶ", "ἐτιμᾶτο", "ἐτιμώμεθα", "ἐτιμᾶσθε", "ἐτιμῶντο"]);
+    addFiniteVerb("verb_imperfect_middle", "ποιέω", "imperfecto indicativo medio; contracto en -έω", "hacer para sí",
+      ["ἐποιούμην", "ἐποιοῦ", "ἐποιεῖτο", "ἐποιούμεθα", "ἐποιεῖσθε", "ἐποιοῦντο"]);
+    addFiniteVerb("verb_imperfect_middle", "δηλόω", "imperfecto indicativo medio; contracto en -όω", "mostrar para sí",
+      ["ἐδηλούμην", "ἐδηλοῦ", "ἐδηλοῦτο", "ἐδηλούμεθα", "ἐδηλοῦσθε", "ἐδηλοῦντο"]);
+    addFiniteVerb("verb_imperfect_middle", "δίδωμι", "imperfecto indicativo medio; atemático", "dar para sí",
+      ["ἐδιδόμην", "ἐδίδοσο", "ἐδίδοτο", "ἐδιδόμεθα", "ἐδίδοσθε", "ἐδίδοντο"]);
+    addFiniteVerb("verb_imperfect_middle", "τίθημι", "imperfecto indicativo medio; atemático", "poner para sí",
+      ["ἐτιθέμην", "ἐτίθεσο", "ἐτίθετο", "ἐτιθέμεθα", "ἐτίθεσθε", "ἐτίθεντο"]);
+    addFiniteVerb("verb_imperfect_middle", "ἵστημι", "imperfecto indicativo medio; atemático", "colocarse; ponerse en pie",
+      ["ἱστάμην", "ἵστασο", "ἵστατο", "ἱστάμεθα", "ἵστασθε", "ἵσταντο"]);
+    addFiniteVerb("verb_imperfect_middle", "ἵημι", "imperfecto indicativo medio; atemático", "lanzar para sí",
+      ["ἱέμην", "ἵεσο", "ἵετο", "ἱέμεθα", "ἵεσθε", "ἵεντο"]);
+
+    // Aoristo sigmático activo y medio.
+    addFiniteVerb("verb_aorist_sigmatic_active", "λύω", "aoristo sigmático indicativo activo", "soltar; desatar",
+      ["ἔλυσα", "ἔλυσας", "ἔλυσε(ν)", "ἐλύσαμεν", "ἐλύσατε", "ἔλυσαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "πέμπω", "aoristo sigmático indicativo activo; tema labial", "enviar",
+      ["ἔπεμψα", "ἔπεμψας", "ἔπεμψε(ν)", "ἐπέμψαμεν", "ἐπέμψατε", "ἔπεμψαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "πλέκω", "aoristo sigmático indicativo activo; tema velar", "trenzar; tejer",
+      ["ἔπλεξα", "ἔπλεξας", "ἔπλεξε(ν)", "ἐπλέξαμεν", "ἐπλέξατε", "ἔπλεξαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "ψεύδω", "aoristo sigmático indicativo activo; tema dental", "mentir",
+      ["ἔψευσα", "ἔψευσας", "ἔψευσε(ν)", "ἐψεύσαμεν", "ἐψεύσατε", "ἔψευσαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "τιμάω", "aoristo sigmático indicativo activo; contracto en -άω", "honrar",
+      ["ἐτίμησα", "ἐτίμησας", "ἐτίμησε(ν)", "ἐτιμήσαμεν", "ἐτιμήσατε", "ἐτίμησαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "ποιέω", "aoristo sigmático indicativo activo; contracto en -έω", "hacer",
+      ["ἐποίησα", "ἐποίησας", "ἐποίησε(ν)", "ἐποιήσαμεν", "ἐποιήσατε", "ἐποίησαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "δηλόω", "aoristo sigmático indicativo activo; contracto en -όω", "mostrar",
+      ["ἐδήλωσα", "ἐδήλωσας", "ἐδήλωσε(ν)", "ἐδηλώσαμεν", "ἐδηλώσατε", "ἐδήλωσαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "ἀγγέλλω", "aoristo sigmático indicativo activo; tema líquido", "anunciar",
+      ["ἤγγειλα", "ἤγγειλας", "ἤγγειλε(ν)", "ἠγγείλαμεν", "ἠγγείλατε", "ἤγγειλαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "φαίνω", "aoristo sigmático indicativo activo; tema nasal", "mostrar; hacer aparecer",
+      ["ἔφηνα", "ἔφηνας", "ἔφηνε(ν)", "ἐφήναμεν", "ἐφήνατε", "ἔφηναν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "ἵστημι", "aoristo sigmático indicativo activo; atemático", "colocar; poner en pie",
+      ["ἔστησα", "ἔστησας", "ἔστησε(ν)", "ἐστήσαμεν", "ἐστήσατε", "ἔστησαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_active", "δείκνυμι", "aoristo sigmático indicativo activo; atemático", "mostrar",
+      ["ἔδειξα", "ἔδειξας", "ἔδειξε(ν)", "ἐδείξαμεν", "ἐδείξατε", "ἔδειξαν"]);
+    addFiniteVerb("verb_aorist_sigmatic_middle", "λύω", "aoristo sigmático indicativo medio", "soltar para sí; desatarse",
+      ["ἐλυσάμην", "ἐλύσω", "ἐλύσατο", "ἐλυσάμεθα", "ἐλύσασθε", "ἐλύσαντο"]);
+
+    // Aoristos radicales.
+    addFiniteVerb("verb_aorist_radical_active", "λείπω", "aoristo radical temático indicativo activo", "dejar",
+      ["ἔλιπον", "ἔλιπες", "ἔλιπε(ν)", "ἐλίπομεν", "ἐλίπετε", "ἔλιπον"]);
+    addFiniteVerb("verb_aorist_radical_active", "βαίνω", "aoristo radical atemático indicativo activo", "ir",
+      ["ἔβην", "ἔβης", "ἔβη", "ἔβημεν", "ἔβητε", "ἔβησαν"]);
+    addFiniteVerb("verb_aorist_radical_active", "γιγνώσκω", "aoristo radical atemático indicativo activo", "conocer",
+      ["ἔγνων", "ἔγνως", "ἔγνω", "ἔγνωμεν", "ἔγνωτε", "ἔγνωσαν"]);
+    addFiniteVerb("verb_aorist_radical_active", "ἵστημι", "aoristo radical atemático indicativo activo; intransitivo", "ponerse en pie",
+      ["ἔστην", "ἔστης", "ἔστη", "ἔστημεν", "ἔστητε", "ἔστησαν"]);
+    addFiniteVerb("verb_aorist_radical_active", "δύω", "aoristo radical atemático indicativo activo", "entrar; sumergirse",
+      ["ἔδυν", "ἔδυς", "ἔδυ", "ἔδυμεν", "ἔδυτε", "ἔδυσαν"]);
+    addFiniteVerb("verb_aorist_radical_active", "ἀποδιδράσκω", "aoristo radical atemático indicativo activo", "escaparse",
+      ["ἀπέδραν", "ἀπέδρας", "ἀπέδρα", "ἀπέδραμεν", "ἀπέδρατε", "ἀπέδρασαν"]);
+    addFiniteVerb("verb_aorist_radical_middle", "λείπω", "aoristo radical temático indicativo medio", "dejar para sí",
+      ["ἐλιπόμην", "ἐλίπου", "ἐλίπετο", "ἐλιπόμεθα", "ἐλίπεσθε", "ἐλίποντο"]);
+    addFiniteVerb("verb_aorist_eta_theta", "φαίνω", "aoristo radical en -η; valor intransitivo", "aparecer",
+      ["ἐφάνην", "ἐφάνης", "ἐφάνη", "ἐφάνημεν", "ἐφάνητε", "ἐφάνησαν"]);
+    addFiniteVerb("verb_aorist_eta_theta", "λύω", "aoristo pasivo en -θη", "ser liberado",
+      ["ἐλύθην", "ἐλύθης", "ἐλύθη", "ἐλύθημεν", "ἐλύθητε", "ἐλύθησαν"]);
+
+    let supplementalInfinitiveId = 1;
+    function addInfinitive(model, active, middle, translation) {
+      const rows = [["Activa", active]];
+      if (middle) rows.push(["Media", middle]);
+      ENTRIES.push({
+        id: `infinitive_present-table-${String(supplementalInfinitiveId++).padStart(2, "0")}`,
+        lemma: model,
+        morphology: middle ? "infinitivo presente activo y medio" : "infinitivo presente activo",
+        translation,
+        partOfSpeech: "infinitivo",
+        declension: "Presente de infinitivo",
+        subtype: middle ? "voz activa y media" : "voz activa",
+        subtypeId: "infinitive_present",
+        inBasicVocab: false,
+        forms: { singular: [], plural: [] },
+        table: {
+          headers: ["Voz", "Forma"],
+          rows
+        }
+      });
+    }
+
+    addInfinitive("λύω", "λύειν", "λύεσθαι", "soltar; desatar");
+    addInfinitive("τιμάω", "τιμᾶν", "τιμᾶσθαι", "honrar");
+    addInfinitive("ποιέω", "ποιεῖν", "ποιεῖσθαι", "hacer");
+    addInfinitive("δηλόω", "δηλοῦν", "δηλοῦσθαι", "mostrar");
+    addInfinitive("φημί", "φάναι", null, "decir; afirmar");
+    addInfinitive("εἶμι", "ἰέναι", null, "ir");
+    addInfinitive("δίδωμι", "διδόναι", "δίδοσθαι", "dar");
+    addInfinitive("τίθημι", "τιθέναι", "τίθεσθαι", "poner");
+    addInfinitive("ἵστημι", "ἱστάναι", "ἵστασθαι", "colocar; ponerse en pie");
+    addInfinitive("ἵημι", "ἱέναι", "ἵεσθαι", "lanzar");
+    addInfinitive("δείκνυμι", "δεικνύναι", "δείκνυσθαι", "mostrar");
+
+    const supplementalParticipleCounters = {};
+    function splitParticipleForms(forms) {
+      return forms.split("|");
+    }
+
+    function addParticiple(subtypeId, lemma, morphology, translation, masculine, feminine, neuter) {
+      supplementalParticipleCounters[subtypeId] = (supplementalParticipleCounters[subtypeId] || 0) + 1;
+      const subtype = SUBTYPES.find(item => item.id === subtypeId);
+      ENTRIES.push({
+        id: `${subtypeId}-table-${String(supplementalParticipleCounters[subtypeId]).padStart(2, "0")}`,
+        lemma,
+        morphology,
+        translation,
+        partOfSpeech: "participio",
+        declension: subtype.declension,
+        subtype: subtype.subtype,
+        subtypeId,
+        inBasicVocab: false,
+        forms: { singular: [], plural: [] },
+        table: threeGenderTable(
+          splitParticipleForms(masculine),
+          splitParticipleForms(feminine),
+          splitParticipleForms(neuter)
+        )
+      });
+    }
+
+    function addMiddleParticiple(subtypeId, lemma, morphology, translation, directStem, obliqueStem) {
+      addParticiple(
+        subtypeId,
+        lemma,
+        morphology,
+        translation,
+        [
+          `${directStem}ος`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
+          `${directStem}οι`, `${obliqueStem}ους`, `${obliqueStem}ων`, `${obliqueStem}οις`
+        ].join("|"),
+        [
+          `${obliqueStem}η`, `${obliqueStem}ην`, `${obliqueStem}ης`, `${obliqueStem}ῃ`,
+          `${directStem}αι`, `${obliqueStem}ας`, `${obliqueStem}ων`, `${obliqueStem}αις`
+        ].join("|"),
+        [
+          `${directStem}ον`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
+          `${directStem}α`, `${directStem}α`, `${obliqueStem}ων`, `${obliqueStem}οις`
+        ].join("|")
+      );
+    }
+
+    // Participios de presente activos.
+    addParticiple(
+      "participle_present",
+      "λύων, λύουσα, λῦον",
+      "participio presente activo de λύω; modelo temático",
+      "que suelta; que desata",
+      "λύων|λύοντα|λύοντος|λύοντι|λύοντες|λύοντας|λυόντων|λύουσι(ν)",
+      "λύουσα|λύουσαν|λυούσης|λυούσῃ|λύουσαι|λυούσας|λυουσῶν|λυούσαις",
+      "λῦον|λῦον|λύοντος|λύοντι|λύοντα|λύοντα|λυόντων|λύουσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "τιμῶν, τιμῶσα, τιμῶν",
+      "participio presente activo de τιμάω; contracto en -άω",
+      "que honra",
+      "τιμῶν|τιμῶντα|τιμῶντος|τιμῶντι|τιμῶντες|τιμῶντας|τιμώντων|τιμῶσι(ν)",
+      "τιμῶσα|τιμῶσαν|τιμώσης|τιμώσῃ|τιμῶσαι|τιμώσας|τιμωσῶν|τιμώσαις",
+      "τιμῶν|τιμῶν|τιμῶντος|τιμῶντι|τιμῶντα|τιμῶντα|τιμώντων|τιμῶσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "ποιῶν, ποιοῦσα, ποιοῦν",
+      "participio presente activo de ποιέω; contracto en -έω",
+      "que hace",
+      "ποιῶν|ποιοῦντα|ποιοῦντος|ποιοῦντι|ποιοῦντες|ποιοῦντας|ποιούντων|ποιοῦσι(ν)",
+      "ποιοῦσα|ποιοῦσαν|ποιούσης|ποιούσῃ|ποιοῦσαι|ποιούσας|ποιουσῶν|ποιούσαις",
+      "ποιοῦν|ποιοῦν|ποιοῦντος|ποιοῦντι|ποιοῦντα|ποιοῦντα|ποιούντων|ποιοῦσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "δηλῶν, δηλοῦσα, δηλοῦν",
+      "participio presente activo de δηλόω; contracto en -όω",
+      "que muestra",
+      "δηλῶν|δηλοῦντα|δηλοῦντος|δηλοῦντι|δηλοῦντες|δηλοῦντας|δηλούντων|δηλοῦσι(ν)",
+      "δηλοῦσα|δηλοῦσαν|δηλούσης|δηλούσῃ|δηλοῦσαι|δηλούσας|δηλουσῶν|δηλούσαις",
+      "δηλοῦν|δηλοῦν|δηλοῦντος|δηλοῦντι|δηλοῦντα|δηλοῦντα|δηλούντων|δηλοῦσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "διδούς, διδοῦσα, διδόν",
+      "participio presente activo de δίδωμι; atemático",
+      "que da",
+      "διδούς|διδόντα|διδόντος|διδόντι|διδόντες|διδόντας|διδόντων|διδοῦσι(ν)",
+      "διδοῦσα|διδοῦσαν|διδούσης|διδούσῃ|διδοῦσαι|διδούσας|διδουσῶν|διδούσαις",
+      "διδόν|διδόν|διδόντος|διδόντι|διδόντα|διδόντα|διδόντων|διδοῦσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "τιθείς, τιθεῖσα, τιθέν",
+      "participio presente activo de τίθημι; atemático",
+      "que pone",
+      "τιθείς|τιθέντα|τιθέντος|τιθέντι|τιθέντες|τιθέντας|τιθέντων|τιθεῖσι(ν)",
+      "τιθεῖσα|τιθεῖσαν|τιθείσης|τιθείσῃ|τιθεῖσαι|τιθείσας|τιθεισῶν|τιθείσαις",
+      "τιθέν|τιθέν|τιθέντος|τιθέντι|τιθέντα|τιθέντα|τιθέντων|τιθεῖσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "ἱστάς, ἱστᾶσα, ἱστάν",
+      "participio presente activo de ἵστημι; atemático",
+      "que coloca; que pone en pie",
+      "ἱστάς|ἱστάντα|ἱστάντος|ἱστάντι|ἱστάντες|ἱστάντας|ἱστάντων|ἱστᾶσι(ν)",
+      "ἱστᾶσα|ἱστᾶσαν|ἱστάσης|ἱστάσῃ|ἱστᾶσαι|ἱστάσας|ἱστασῶν|ἱστάσαις",
+      "ἱστάν|ἱστάν|ἱστάντος|ἱστάντι|ἱστάντα|ἱστάντα|ἱστάντων|ἱστᾶσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "ἱείς, ἱεῖσα, ἱέν",
+      "participio presente activo de ἵημι; atemático",
+      "que lanza",
+      "ἱείς|ἱέντα|ἱέντος|ἱέντι|ἱέντες|ἱέντας|ἱέντων|ἱεῖσι(ν)",
+      "ἱεῖσα|ἱεῖσαν|ἱείσης|ἱείσῃ|ἱεῖσαι|ἱείσας|ἱεισῶν|ἱείσαις",
+      "ἱέν|ἱέν|ἱέντος|ἱέντι|ἱέντα|ἱέντα|ἱέντων|ἱεῖσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "δεικνύς, δεικνῦσα, δεικνύν",
+      "participio presente activo de δείκνυμι; atemático",
+      "que muestra",
+      "δεικνύς|δεικνύντα|δεικνύντος|δεικνύντι|δεικνύντες|δεικνύντας|δεικνύντων|δεικνῦσι(ν)",
+      "δεικνῦσα|δεικνῦσαν|δεικνύσης|δεικνύσῃ|δεικνῦσαι|δεικνύσας|δεικνυσῶν|δεικνύσαις",
+      "δεικνύν|δεικνύν|δεικνύντος|δεικνύντι|δεικνύντα|δεικνύντα|δεικνύντων|δεικνῦσι(ν)"
+    );
+    addParticiple(
+      "participle_present",
+      "ἰών, ἰοῦσα, ἰόν",
+      "participio presente activo de εἶμι; atemático excepcional",
+      "que va",
+      "ἰών|ἰόντα|ἰόντος|ἰόντι|ἰόντες|ἰόντας|ἰόντων|ἰοῦσι(ν)",
+      "ἰοῦσα|ἰοῦσαν|ἰούσης|ἰούσῃ|ἰοῦσαι|ἰούσας|ἰουσῶν|ἰούσαις",
+      "ἰόν|ἰόν|ἰόντος|ἰόντι|ἰόντα|ἰόντα|ἰόντων|ἰοῦσι(ν)"
+    );
+
+    // Participios de presente medios.
+    addMiddleParticiple(
+      "participle_present",
+      "λυόμενος, λυομένη, λυόμενον",
+      "participio presente medio de λύω; modelo temático",
+      "que se desata; que desata para sí",
+      "λυόμεν",
+      "λυομέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "τιμώμενος, τιμωμένη, τιμώμενον",
+      "participio presente medio de τιμάω; contracto en -άω",
+      "que se honra; que honra para sí",
+      "τιμώμεν",
+      "τιμωμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "ποιούμενος, ποιουμένη, ποιούμενον",
+      "participio presente medio de ποιέω; contracto en -έω",
+      "que hace para sí",
+      "ποιούμεν",
+      "ποιουμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "δηλούμενος, δηλουμένη, δηλούμενον",
+      "participio presente medio de δηλόω; contracto en -όω",
+      "que muestra para sí",
+      "δηλούμεν",
+      "δηλουμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "διδόμενος, διδομένη, διδόμενον",
+      "participio presente medio de δίδωμι; atemático",
+      "que da para sí",
+      "διδόμεν",
+      "διδομέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "τιθέμενος, τιθεμένη, τιθέμενον",
+      "participio presente medio de τίθημι; atemático",
+      "que pone para sí",
+      "τιθέμεν",
+      "τιθεμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "ἱστάμενος, ἱσταμένη, ἱστάμενον",
+      "participio presente medio de ἵστημι; atemático",
+      "que se coloca; que se pone en pie",
+      "ἱστάμεν",
+      "ἱσταμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "ἱέμενος, ἱεμένη, ἱέμενον",
+      "participio presente medio de ἵημι; atemático",
+      "que lanza para sí",
+      "ἱέμεν",
+      "ἱεμέν"
+    );
+    addMiddleParticiple(
+      "participle_present",
+      "δεικνύμενος, δεικνυμένη, δεικνύμενον",
+      "participio presente medio de δείκνυμι; atemático",
+      "que muestra para sí",
+      "δεικνύμεν",
+      "δεικνυμέν"
+    );
+
+    // Participio de futuro activo.
+    addParticiple(
+      "participle_future",
+      "λύσων, λύσουσα, λῦσον",
+      "participio futuro activo de λύω",
+      "que soltará; que desatará",
+      "λύσων|λύσοντα|λύσοντος|λύσοντι|λύσοντες|λύσοντας|λυσόντων|λύσουσι(ν)",
+      "λύσουσα|λύσουσαν|λυσούσης|λυσούσῃ|λύσουσαι|λυσούσας|λυσουσῶν|λυσούσαις",
+      "λῦσον|λῦσον|λύσοντος|λύσοντι|λύσοντα|λύσοντα|λυσόντων|λύσουσι(ν)"
+    );
+
+    // Participios de aoristo.
+    addParticiple(
+      "participle_aorist",
+      "λύσας, λύσασα, λῦσαν",
+      "participio aoristo sigmático activo de λύω",
+      "que soltó; habiendo soltado",
+      "λύσας|λύσαντα|λύσαντος|λύσαντι|λύσαντες|λύσαντας|λυσάντων|λύσασι(ν)",
+      "λύσασα|λύσασαν|λυσάσης|λυσάσῃ|λύσασαι|λυσάσας|λυσασῶν|λυσάσαις",
+      "λῦσαν|λῦσαν|λύσαντος|λύσαντι|λύσαντα|λύσαντα|λυσάντων|λύσασι(ν)"
+    );
+    addMiddleParticiple(
+      "participle_aorist",
+      "λυσάμενος, λυσαμένη, λυσάμενον",
+      "participio aoristo sigmático medio de λύω",
+      "que se soltó; habiéndose soltado",
+      "λυσάμεν",
+      "λυσαμέν"
+    );
+    addParticiple(
+      "participle_aorist",
+      "λιπών, λιποῦσα, λιπόν",
+      "participio aoristo radical temático activo de λείπω",
+      "que dejó; habiendo dejado",
+      "λιπών|λιπόντα|λιπόντος|λιπόντι|λιπόντες|λιπόντας|λιπόντων|λιποῦσι(ν)",
+      "λιποῦσα|λιποῦσαν|λιπούσης|λιπούσῃ|λιποῦσαι|λιπούσας|λιπουσῶν|λιπούσαις",
+      "λιπόν|λιπόν|λιπόντος|λιπόντι|λιπόντα|λιπόντα|λιπόντων|λιποῦσι(ν)"
+    );
+    addMiddleParticiple(
+      "participle_aorist",
+      "λιπόμενος, λιπομένη, λιπόμενον",
+      "participio aoristo radical temático medio de λείπω",
+      "que dejó para sí",
+      "λιπόμεν",
+      "λιπομέν"
+    );
+    addParticiple(
+      "participle_aorist",
+      "λυθείς, λυθεῖσα, λυθέν",
+      "participio aoristo pasivo de λύω; tema en -ντ",
+      "desatado; que fue liberado",
+      "λυθείς|λυθέντα|λυθέντος|λυθέντι|λυθέντες|λυθέντας|λυθέντων|λυθεῖσι(ν)",
+      "λυθεῖσα|λυθεῖσαν|λυθείσης|λυθείσῃ|λυθεῖσαι|λυθείσας|λυθεισῶν|λυθείσαις",
+      "λυθέν|λυθέν|λυθέντος|λυθέντι|λυθέντα|λυθέντα|λυθέντων|λυθεῖσι(ν)"
+    );
+    const BASE_ENTRIES = [
     {
         "id": "1f_alpha_pure-001",
         "lemma": "θερμασία",
@@ -59367,12 +60187,19 @@
         }
     }
 ];
+    ENTRIES.unshift(...BASE_ENTRIES);
+    PENDING_THIRD_ADJECTIVE_TABLES.forEach((table, lemma) => {
+      const entry = ENTRIES.find(item => item.lemma === lemma && item.subtypeId === "3_adj");
+      if (entry) entry.table = table;
+    });
     const CASE_ORDER = ["Nominativo", "Vocativo", "Acusativo", "Genitivo", "Dativo"];
     const PERSON_ORDER = ["1.ª persona", "2.ª persona", "3.ª persona"];
     const TYPE_LABELS = {
       sustantivo: "Sustantivo",
       adjetivo: "Adjetivo",
-      verbo: "Verbo"
+      verbo: "Verbo",
+      participio: "Participio",
+      infinitivo: "Infinitivo"
     };
     const GROUPS = ENTRIES.reduce((groups, entry) => {
       if (!groups[entry.subtypeId]) groups[entry.subtypeId] = [];
@@ -59393,8 +60220,8 @@
       const plural = new Map(entry.forms.plural.map(([caseName, article, form]) => [caseName, formWithArticle(article, form)]));
       return order.map(caseName => ({
         caseName,
-        singular: singular.get(caseName),
-        plural: plural.get(caseName)
+        singular: singular.get(caseName) || "—",
+        plural: plural.get(caseName) || "—"
       }));
     }
 
@@ -59403,12 +60230,12 @@
     }
 
     function typeCountsText() {
-      const counts = { sustantivo: 0, adjetivo: 0, verbo: 0 };
+      const counts = { sustantivo: 0, adjetivo: 0, participio: 0, verbo: 0, infinitivo: 0 };
       ENTRIES.forEach(entry => {
         const type = entry.partOfSpeech || "sustantivo";
         counts[type] = (counts[type] || 0) + 1;
       });
-      return `Sustantivos: ${counts.sustantivo || 0} · Adjetivos: ${counts.adjetivo || 0} · Verbos: ${counts.verbo || 0}`;
+      return `Sustantivos: ${counts.sustantivo || 0} · Adjetivos: ${counts.adjetivo || 0} · Participios: ${counts.participio || 0} · Verbos: ${counts.verbo || 0} · Infinitivos: ${counts.infinitivo || 0}`;
     }
 
     function buildWordList() {
@@ -59423,9 +60250,9 @@
         lemma.textContent = entry.lemma;
         const meta = document.createElement("span");
         meta.className = "word-option-meta";
-        meta.textContent = typeLabel(entry.partOfSpeech);
         button.appendChild(lemma);
         button.appendChild(meta);
+        meta.textContent = `${typeLabel(entry.partOfSpeech)} · ${entry.declension}`;
         button.addEventListener("click", () => {
           renderEntry(entry);
           list.classList.remove("visible");
@@ -59441,18 +60268,54 @@
       document.getElementById("morphology").textContent = entry.morphology;
       document.getElementById("translation").textContent = entry.translation;
       document.getElementById("declension").classList.remove("visible");
-      document.getElementById("showDeclension").textContent = entry.partOfSpeech === "verbo"
-        ? "Mostrar conjugación"
-        : "Mostrar declinación";
+      document.getElementById("showDeclension").textContent = actionText(entry, "Mostrar");
       renderDeclension(entry);
+    }
+
+    function actionText(entry, action) {
+      if (entry.partOfSpeech === "verbo") return `${action} conjugación`;
+      if (entry.partOfSpeech === "infinitivo") return `${action} formas`;
+      return `${action} declinación`;
     }
 
     function renderDeclension(entry) {
       document.getElementById("declensionTitle").textContent = entry.lemma;
-      document.getElementById("caseHeader").textContent = entry.partOfSpeech === "verbo" ? "Persona" : "Caso";
       document.getElementById("declensionType").textContent = `${typeLabel(entry.partOfSpeech)} · ${entry.declension}: ${entry.subtype}`;
+      const table = document.querySelector("#declension table");
+      const head = document.getElementById("declensionHeadRow");
       const body = document.getElementById("declensionBody");
+      head.innerHTML = "";
       body.innerHTML = "";
+
+      if (entry.table) {
+        table.classList.toggle("multi-column", entry.table.headers.length > 3);
+        entry.table.headers.forEach((label, index) => {
+          const th = document.createElement("th");
+          th.textContent = label;
+          if (index === 0) th.className = "case";
+          head.appendChild(th);
+        });
+        entry.table.rows.forEach(row => {
+          const tr = document.createElement("tr");
+          row.forEach((value, index) => {
+            const td = document.createElement("td");
+            td.className = index === 0 ? "case" : "greek";
+            td.textContent = value || "—";
+            tr.appendChild(td);
+          });
+          body.appendChild(tr);
+        });
+        return;
+      }
+
+      table.classList.remove("multi-column");
+      const firstHeader = entry.partOfSpeech === "verbo" ? "Persona" : "Caso";
+      [firstHeader, "Singular", "Plural"].forEach((label, index) => {
+        const th = document.createElement("th");
+        th.textContent = label;
+        if (index === 0) th.className = "case";
+        head.appendChild(th);
+      });
       rowsFor(entry).forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -59473,9 +60336,10 @@
     document.getElementById("showDeclension").addEventListener("click", () => {
       const panel = document.getElementById("declension");
       panel.classList.toggle("visible");
-      document.getElementById("showDeclension").textContent = panel.classList.contains("visible")
-        ? (current && current.partOfSpeech === "verbo" ? "Ocultar conjugación" : "Ocultar declinación")
-        : (current && current.partOfSpeech === "verbo" ? "Mostrar conjugación" : "Mostrar declinación");
+      document.getElementById("showDeclension").textContent = actionText(
+        current,
+        panel.classList.contains("visible") ? "Ocultar" : "Mostrar"
+      );
     });
 
     document.getElementById("nextWord").addEventListener("click", () => {
@@ -59507,6 +60371,6 @@
     buildWordList();
     renderEntry(randomEntry());
   </script>
-  <!-- entry-counts: 1f_alpha_pure=111, 1f_alpha_impure=36, 1f_eta=104, 1m_eta=69, 1m_alpha=4, 1f_contract=1, 2m_os=127, 2f_os=53, 2n_on=73, 2_common_os=4, 2_adj_thematic=139, 2_adj_contract=1, 2_attic_mf=8, 2_contract=2, verb_present=158, 3_noun=27, 3_adj=9 -->
+  <!-- entry-counts: 1f_alpha_pure=111, 1f_alpha_impure=36, 1f_eta=104, 1m_eta=69, 1m_alpha=4, 1f_contract=1, 2m_os=127, 2f_os=53, 2n_on=73, 2_common_os=4, 2_adj_thematic=139, 2_adj_contract=1, 2_attic_mf=8, 2_contract=2, verb_present=166, 3_noun=68, 3_adj=10, verb_imperfect_active=12, verb_present_middle=9, verb_imperfect_middle=8, verb_aorist_sigmatic_active=11, verb_aorist_sigmatic_middle=1, verb_aorist_radical_active=6, verb_aorist_radical_middle=1, verb_aorist_eta_theta=2, infinitive_present=11, participle_present=19, participle_future=1, participle_aorist=5 -->
 </body>
 </html>
