@@ -109,18 +109,31 @@
 
     .filters {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
-      gap: 14px;
-      align-items: end;
+      gap: 16px;
       padding: 18px;
       border: 1px solid var(--line);
       border-radius: 15px;
       background: #f8f4ec;
     }
 
-    .field { display: grid; gap: 7px; }
+    .filter-groups {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 18px;
+    }
 
-    label {
+    .filter-group {
+      min-width: 0;
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .filter-group legend {
+      margin: 0 0 9px;
+      padding: 0;
       color: #564d43;
       font-size: .78rem;
       font-weight: 800;
@@ -128,15 +141,57 @@
       text-transform: uppercase;
     }
 
-    select {
-      width: 100%;
-      min-height: 46px;
-      padding: 0 42px 0 13px;
-      color: var(--ink);
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-option {
+      min-width: 42px;
+      min-height: 40px;
+      padding: 0 12px;
+      color: #554c43;
       border: 1px solid #cfc2b1;
-      border-radius: 10px;
+      border-radius: 999px;
       background: #fffdf9;
+      font-weight: 750;
       cursor: pointer;
+      transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+    }
+
+    .filter-option:hover {
+      border-color: #aa8e84;
+      background: #fff8f4;
+    }
+
+    .filter-option[aria-pressed="true"] {
+      color: #fff;
+      border-color: var(--wine);
+      background: var(--wine);
+      box-shadow: 0 4px 10px rgba(122, 47, 58, .15);
+    }
+
+    .filter-option.all-option[aria-pressed="true"] {
+      border-color: var(--olive);
+      background: var(--olive);
+      box-shadow: 0 4px 10px rgba(86, 99, 58, .15);
+    }
+
+    .filter-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(217, 207, 191, .85);
+    }
+
+    .filter-help {
+      margin: 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.45;
     }
 
     .available {
@@ -315,7 +370,8 @@
     }
 
     @media (max-width: 720px) {
-      .filters { grid-template-columns: 1fr; }
+      .filter-groups { grid-template-columns: 1fr; }
+      .filter-status { align-items: flex-start; flex-direction: column; }
       .available { justify-self: start; }
       .card { min-height: 330px; }
       .actions { display: grid; grid-template-columns: 1fr; }
@@ -339,42 +395,47 @@
       <header class="masthead">
         <p class="eyebrow">Griego I · Temas 3–14</p>
         <h1 id="page-title">Ejercicios al azar</h1>
-        <p class="lead">Elige un tema, un tipo de ejercicio o combina ambos filtros. La solución permanece oculta hasta que decidas comprobarla.</p>
+        <p class="lead">Elige uno o varios temas y tipos de ejercicio. Puedes combinarlos libremente; la solución permanece oculta hasta que decidas comprobarla.</p>
       </header>
 
       <div class="content">
         <form class="filters" aria-label="Filtros de ejercicios" onsubmit="return false">
-          <div class="field">
-            <label for="theme-filter">Tema</label>
-            <select id="theme-filter">
-              <option value="all">Todos los temas</option>
-              <option value="3">Tema 3</option>
-              <option value="4">Tema 4</option>
-              <option value="5">Tema 5</option>
-              <option value="6">Tema 6</option>
-              <option value="7">Tema 7</option>
-              <option value="8">Tema 8</option>
-              <option value="9">Tema 9</option>
-              <option value="10">Tema 10</option>
-              <option value="11">Tema 11</option>
-              <option value="12">Tema 12</option>
-              <option value="13">Tema 13</option>
-              <option value="14">Tema 14</option>
-            </select>
+          <div class="filter-groups">
+            <fieldset class="filter-group">
+              <legend>Temas</legend>
+              <div class="filter-options" id="theme-filter">
+                <button class="filter-option all-option" type="button" data-value="all" aria-pressed="true">Todos</button>
+                <button class="filter-option" type="button" data-value="3" aria-pressed="false">3</button>
+                <button class="filter-option" type="button" data-value="4" aria-pressed="false">4</button>
+                <button class="filter-option" type="button" data-value="5" aria-pressed="false">5</button>
+                <button class="filter-option" type="button" data-value="6" aria-pressed="false">6</button>
+                <button class="filter-option" type="button" data-value="7" aria-pressed="false">7</button>
+                <button class="filter-option" type="button" data-value="8" aria-pressed="false">8</button>
+                <button class="filter-option" type="button" data-value="9" aria-pressed="false">9</button>
+                <button class="filter-option" type="button" data-value="10" aria-pressed="false">10</button>
+                <button class="filter-option" type="button" data-value="11" aria-pressed="false">11</button>
+                <button class="filter-option" type="button" data-value="12" aria-pressed="false">12</button>
+                <button class="filter-option" type="button" data-value="13" aria-pressed="false">13</button>
+                <button class="filter-option" type="button" data-value="14" aria-pressed="false">14</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend>Tipos de ejercicio</legend>
+              <div class="filter-options" id="type-filter">
+                <button class="filter-option all-option" type="button" data-value="all" aria-pressed="true">Todos</button>
+                <button class="filter-option" type="button" data-value="nominal" aria-pressed="false">Morfología nominal</button>
+                <button class="filter-option" type="button" data-value="verbal" aria-pressed="false">Morfología verbal</button>
+                <button class="filter-option" type="button" data-value="sintaxis" aria-pressed="false">Material sintáctico</button>
+                <button class="filter-option" type="button" data-value="repaso" aria-pressed="false">Repaso global</button>
+              </div>
+            </fieldset>
           </div>
 
-          <div class="field">
-            <label for="type-filter">Tipo de ejercicio</label>
-            <select id="type-filter">
-              <option value="all">Todos los tipos</option>
-              <option value="nominal">Morfología nominal</option>
-              <option value="verbal">Morfología verbal</option>
-              <option value="sintaxis">Material sintáctico</option>
-              <option value="repaso">Repaso global</option>
-            </select>
+          <div class="filter-status">
+            <p class="filter-help">Pulsa varias opciones para sumarlas. «Todos» restablece el grupo completo.</p>
+            <output class="available" id="available-count" aria-live="polite"></output>
           </div>
-
-          <output class="available" id="available-count" aria-live="polite"></output>
         </form>
 
         <article class="card" aria-labelledby="question-text">
@@ -428,13 +489,44 @@
       let queue = [];
       let current = null;
 
-      function filteredExercises() {
-        const selectedTheme = themeFilter.value;
-        const selectedType = typeFilter.value;
-        return exercises.filter((exercise) =>
-          (selectedTheme === "all" || String(exercise.tema) === selectedTheme) &&
-          (selectedType === "all" || exercise.tipo === selectedType)
+      function selectedValues(filter) {
+        return new Set(
+          [...filter.querySelectorAll('.filter-option[aria-pressed="true"]')]
+            .map((button) => button.dataset.value)
+            .filter((value) => value !== "all")
         );
+      }
+
+      function filteredExercises() {
+        const selectedThemes = selectedValues(themeFilter);
+        const selectedTypes = selectedValues(typeFilter);
+        return exercises.filter((exercise) =>
+          (selectedThemes.size === 0 || selectedThemes.has(String(exercise.tema))) &&
+          (selectedTypes.size === 0 || selectedTypes.has(exercise.tipo))
+        );
+      }
+
+      function handleFilterClick(event) {
+        const option = event.target.closest(".filter-option");
+        if (!option) return;
+
+        const filter = event.currentTarget;
+        const allOption = filter.querySelector('[data-value="all"]');
+        const individualOptions = [...filter.querySelectorAll('.filter-option:not([data-value="all"])')];
+
+        if (option.dataset.value === "all") {
+          allOption.setAttribute("aria-pressed", "true");
+          individualOptions.forEach((button) => button.setAttribute("aria-pressed", "false"));
+        } else {
+          const willSelect = option.getAttribute("aria-pressed") !== "true";
+          option.setAttribute("aria-pressed", String(willSelect));
+          const hasSelection = individualOptions.some(
+            (button) => button.getAttribute("aria-pressed") === "true"
+          );
+          allOption.setAttribute("aria-pressed", String(!hasSelection));
+        }
+
+        applyFilters();
       }
 
       function shuffle(items) {
@@ -490,8 +582,8 @@
         showNextExercise();
       }
 
-      themeFilter.addEventListener("change", applyFilters);
-      typeFilter.addEventListener("change", applyFilters);
+      themeFilter.addEventListener("click", handleFilterClick);
+      typeFilter.addEventListener("click", handleFilterClick);
       solutionButton.addEventListener("click", toggleSolution);
       nextButton.addEventListener("click", () => showNextExercise({ focusQuestion: true }));
 
