@@ -87,14 +87,111 @@
 
     .total {
       flex: 0 0 auto;
+      min-height: 0;
       padding: 7px 10px;
       border: 1px solid #b8c9c4;
       border-radius: 6px;
       color: var(--accent-dark);
       background: var(--accent-soft);
+      cursor: pointer;
       font-size: .82rem;
       line-height: 1;
       font-weight: 750;
+    }
+
+    .total:hover {
+      border-color: #8eaaa2;
+      background: #dceae6;
+    }
+
+    .entries-dialog {
+      width: min(720px, calc(100% - 28px));
+      max-height: min(82vh, 760px);
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: 0 24px 70px rgba(17, 24, 39, .28);
+    }
+
+    .entries-dialog::backdrop {
+      background: rgba(23, 32, 51, .52);
+    }
+
+    .entries-dialog-header {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .entries-dialog h2 {
+      margin: 0;
+      color: #12213d;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .entries-dialog-subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.35;
+    }
+
+    .dialog-close {
+      min-height: 38px;
+      padding: 7px 12px;
+      color: var(--accent-dark);
+      border-color: #aebdb8;
+      background: #fff;
+    }
+
+    .dialog-close:hover { background: var(--accent-soft); }
+
+    .entries-table-wrap {
+      max-height: calc(min(82vh, 760px) - 86px);
+      overflow: auto;
+      padding: 0 22px 22px;
+    }
+
+    .entries-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .96rem;
+      line-height: 1.35;
+    }
+
+    .entries-table th,
+    .entries-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .entries-table th {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: .78rem;
+      text-transform: uppercase;
+    }
+
+    .entry-greek {
+      width: 42%;
+      color: #111827;
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      font-size: 1.18rem;
     }
 
     .content {
@@ -406,6 +503,13 @@
       .check-button { width: 100%; }
       .actions { display: grid; grid-template-columns: 1fr; }
       button { width: 100%; }
+
+      .entries-dialog-header { padding: 17px 16px 14px; }
+      .dialog-close { width: auto; }
+      .entries-table-wrap { padding: 0 10px 14px; }
+      .entries-table th,
+      .entries-table td { padding: 9px 8px; }
+      .entry-greek { width: 46%; }
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -425,7 +529,13 @@
           <h1 id="app-title">Vocabulario no flexivo</h1>
           <p class="subtitle">Manual de griego clásico · temas 1–14</p>
         </div>
-        <div class="total" id="total-count">55 fichas</div>
+        <button
+          type="button"
+          class="total"
+          id="total-count"
+          aria-haspopup="dialog"
+          aria-controls="entries-dialog"
+        >55 fichas · ver lista</button>
       </header>
 
       <div class="content">
@@ -491,6 +601,28 @@
         </div>
       </div>
     </section>
+
+    <dialog class="entries-dialog" id="entries-dialog" aria-labelledby="entries-dialog-title">
+      <div class="entries-dialog-header">
+        <div>
+          <h2 id="entries-dialog-title">Todas las entradas</h2>
+          <p class="entries-dialog-subtitle" id="entries-dialog-subtitle">55 términos ordenados alfabéticamente en griego</p>
+        </div>
+        <button type="button" class="dialog-close" id="entries-dialog-close">Cerrar</button>
+      </div>
+      <div class="entries-table-wrap">
+        <table class="entries-table">
+          <caption class="sr-only">Términos griegos y sus traducciones al castellano</caption>
+          <thead>
+            <tr>
+              <th scope="col">Griego</th>
+              <th scope="col">Traducción</th>
+            </tr>
+          </thead>
+          <tbody id="entries-list-body"></tbody>
+        </table>
+      </div>
+    </dialog>
   </main>
 
   <script>
@@ -581,6 +713,11 @@
     const feedback = document.getElementById("feedback");
     const revealButton = document.getElementById("reveal-button");
     const nextButton = document.getElementById("next-button");
+    const totalCount = document.getElementById("total-count");
+    const entriesDialog = document.getElementById("entries-dialog");
+    const entriesDialogClose = document.getElementById("entries-dialog-close");
+    const entriesDialogSubtitle = document.getElementById("entries-dialog-subtitle");
+    const entriesListBody = document.getElementById("entries-list-body");
 
     const stats = entries.map(() => ({ attempts: 0, correct: 0 }));
     let questionNumber = 0;
@@ -646,6 +783,48 @@
           option.textContent = label;
           greekTermSelect.append(option);
         });
+    }
+
+    function populateEntriesList() {
+      const greekCollator = new Intl.Collator("el", {
+        sensitivity: "base",
+        ignorePunctuation: true
+      });
+
+      entries
+        .map((entry, index) => ({ entry, index }))
+        .sort((a, b) => (
+          greekCollator.compare(a.entry.greek, b.entry.greek)
+          || a.index - b.index
+        ))
+        .forEach(({ entry }) => {
+          const row = document.createElement("tr");
+          const greekCell = document.createElement("td");
+          const spanishCell = document.createElement("td");
+
+          greekCell.className = "entry-greek";
+          greekCell.lang = "grc";
+          greekCell.textContent = entry.greek;
+          spanishCell.textContent = entry.spanish;
+          row.append(greekCell, spanishCell);
+          entriesListBody.append(row);
+        });
+    }
+
+    function openEntriesDialog() {
+      if (typeof entriesDialog.showModal === "function") {
+        entriesDialog.showModal();
+      } else {
+        entriesDialog.setAttribute("open", "");
+      }
+    }
+
+    function closeEntriesDialog() {
+      if (typeof entriesDialog.close === "function") {
+        entriesDialog.close();
+      } else {
+        entriesDialog.removeAttribute("open");
+      }
     }
 
     function entryWeight(index) {
@@ -868,6 +1047,11 @@
     checkButton.addEventListener("click", checkAnswer);
     revealButton.addEventListener("click", revealAnswer);
     nextButton.addEventListener("click", nextCard);
+    totalCount.addEventListener("click", openEntriesDialog);
+    entriesDialogClose.addEventListener("click", closeEntriesDialog);
+    entriesDialog.addEventListener("click", (event) => {
+      if (event.target === entriesDialog) closeEntriesDialog();
+    });
 
     document.addEventListener("keydown", (event) => {
       if (event.target.matches("button, input, select, label")) return;
@@ -878,7 +1062,9 @@
       if (event.key === "ArrowRight") nextCard();
     });
 
-    document.getElementById("total-count").textContent = `${entries.length} fichas`;
+    totalCount.textContent = `${entries.length} fichas · ver lista`;
+    entriesDialogSubtitle.textContent = `${entries.length} términos ordenados alfabéticamente en griego`;
+    populateEntriesList();
     populateTranslationOptions();
     populateGreekOptions();
     nextCard();
