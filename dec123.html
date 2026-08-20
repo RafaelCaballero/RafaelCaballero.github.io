@@ -666,19 +666,38 @@
       "Plur. · N/V", "Plur. · A", "Plur. · G", "Plur. · D"
     ];
 
+    const GENDER_ROW_LABELS_WITH_SINGULAR_VOCATIVE = [
+      "Sing. · N", "Sing. · V", "Sing. · A", "Sing. · G", "Sing. · D",
+      "Plur. · N/V", "Plur. · A", "Plur. · G", "Plur. · D"
+    ];
+
+    function genderRowLabels(...columns) {
+      const length = columns[0].length;
+      if (!columns.every(column => column.length === length)) {
+        throw new Error("Las columnas del paradigma deben tener la misma longitud.");
+      }
+      if (length === GENDER_ROW_LABELS.length) return GENDER_ROW_LABELS;
+      if (length === GENDER_ROW_LABELS_WITH_SINGULAR_VOCATIVE.length) {
+        return GENDER_ROW_LABELS_WITH_SINGULAR_VOCATIVE;
+      }
+      throw new Error(`Número inesperado de formas en el paradigma: ${length}.`);
+    }
+
     function threeGenderTable(masculine, feminine, neuter) {
+      const rowLabels = genderRowLabels(masculine, feminine, neuter);
       return {
         headers: ["Número y caso", "Masculino", "Femenino", "Neutro"],
-        rows: GENDER_ROW_LABELS.map((label, index) => [
+        rows: rowLabels.map((label, index) => [
           label, masculine[index], feminine[index], neuter[index]
         ])
       };
     }
 
     function twoGenderTable(common, neuter) {
+      const rowLabels = genderRowLabels(common, neuter);
       return {
         headers: ["Número y caso", "Masculino / femenino", "Neutro"],
-        rows: GENDER_ROW_LABELS.map((label, index) => [label, common[index], neuter[index]])
+        rows: rowLabels.map((label, index) => [label, common[index], neuter[index]])
       };
     }
 
@@ -693,13 +712,13 @@
     }
 
     setTableForLemma("εὐδαίμων", twoGenderTable(
-      ["εὐδαίμων", "εὐδαίμονα", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονες", "εὐδαίμονας", "εὐδαιμόνων", "εὐδαίμοσι(ν)"],
-      ["εὔδαιμον", "εὔδαιμον", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονα", "εὐδαίμονα", "εὐδαιμόνων", "εὐδαίμοσι(ν)"]
+      ["εὐδαίμων", "εὔδαιμον", "εὐδαίμονα", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονες", "εὐδαίμονας", "εὐδαιμόνων", "εὐδαίμοσι(ν)"],
+      ["εὔδαιμον", "εὔδαιμον", "εὔδαιμον", "εὐδαίμονος", "εὐδαίμονι", "εὐδαίμονα", "εὐδαίμονα", "εὐδαιμόνων", "εὐδαίμοσι(ν)"]
     ));
     setTableForLemma("μέλας", threeGenderTable(
-      ["μέλας", "μέλανα", "μέλανος", "μέλανι", "μέλανες", "μέλανας", "μελάνων", "μέλασι(ν)"],
-      ["μέλαινα", "μέλαιναν", "μελαίνης", "μελαίνῃ", "μέλαιναι", "μελαίνας", "μελαινῶν", "μελαίναις"],
-      ["μέλαν", "μέλαν", "μέλανος", "μέλανι", "μέλανα", "μέλανα", "μελάνων", "μέλασι(ν)"]
+      ["μέλας", "μέλαν", "μέλανα", "μέλανος", "μέλανι", "μέλανες", "μέλανας", "μελάνων", "μέλασι(ν)"],
+      ["μέλαινα", "μέλαινα", "μέλαιναν", "μελαίνης", "μελαίνῃ", "μέλαιναι", "μελαίνας", "μελαινῶν", "μελαίναις"],
+      ["μέλαν", "μέλαν", "μέλαν", "μέλανος", "μέλανι", "μέλανα", "μέλανα", "μελάνων", "μέλασι(ν)"]
     ));
     setTableForLemma("ἄκων", threeGenderTable(
       ["ἄκων", "ἄκοντα", "ἄκοντος", "ἄκοντι", "ἄκοντες", "ἄκοντας", "ἀκόντων", "ἄκουσι(ν)"],
@@ -726,8 +745,8 @@
         ["ἀληθής", "ἀληθές", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ"],
         ["ἀληθεῖς", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"]),
       table: twoGenderTable(
-        ["ἀληθής", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"],
-        ["ἀληθές", "ἀληθές", "ἀληθοῦς", "ἀληθεῖ", "ἀληθῆ", "ἀληθῆ", "ἀληθῶν", "ἀληθέσι(ν)"]
+        ["ἀληθής", "ἀληθές", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"],
+        ["ἀληθές", "ἀληθές", "ἀληθές", "ἀληθοῦς", "ἀληθεῖ", "ἀληθῆ", "ἀληθῆ", "ἀληθῶν", "ἀληθέσι(ν)"]
       )
     });
 
@@ -1068,15 +1087,15 @@
         morphology,
         translation,
         [
-          `${directStem}ος`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
+          `${directStem}ος`, `${directStem}ε`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
           `${directStem}οι`, `${obliqueStem}ους`, `${obliqueStem}ων`, `${obliqueStem}οις`
         ].join("|"),
         [
-          `${obliqueStem}η`, `${obliqueStem}ην`, `${obliqueStem}ης`, `${obliqueStem}ῃ`,
+          `${obliqueStem}η`, `${obliqueStem}η`, `${obliqueStem}ην`, `${obliqueStem}ης`, `${obliqueStem}ῃ`,
           `${directStem}αι`, `${obliqueStem}ας`, `${obliqueStem}ων`, `${obliqueStem}αις`
         ].join("|"),
         [
-          `${directStem}ον`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
+          `${directStem}ον`, `${directStem}ον`, `${directStem}ον`, `${obliqueStem}ου`, `${obliqueStem}ῳ`,
           `${directStem}α`, `${directStem}α`, `${obliqueStem}ων`, `${obliqueStem}οις`
         ].join("|")
       );
@@ -60005,7 +60024,7 @@
                 [
                     "Vocativo",
                     "ὦ",
-                    "μέλας"
+                    "μέλαν"
                 ],
                 [
                     "Acusativo",
