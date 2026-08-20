@@ -306,7 +306,7 @@
     <section class="shell" aria-live="polite">
       <header>
         <h1>Declinaciones y verbos</h1>
-        <p class="sub">Entrada aleatoria del vocabulario flexivo y de las tablas de tercera declinación y verbos.</p>
+        <p class="sub">Entrada aleatoria del vocabulario flexivo y de las tablas de tercera declinación y verbos introducidos en los temas 1–14 de Griego I.</p>
       </header>
 
       <div class="content">
@@ -500,7 +500,9 @@
      * - tablas_verbos_formateadas.docx
      *
      * Se mantiene el vocabulario original y se añaden únicamente los modelos
-     * ausentes o los paradigmas (tiempo/voz) que no estaban representados.
+     * ausentes o los paradigmas (tiempo/voz) introducidos en los temas 1-14.
+     * Se excluyen los temas nominales en -ς, que comienzan en el tema 15,
+     * y los restantes modelos nominales estudiados con posterioridad.
      */
     const SUPPLEMENT_CASES = ["Nominativo", "Vocativo", "Acusativo", "Genitivo", "Dativo"];
     const SUPPLEMENT_ARTICLES = {
@@ -577,90 +579,9 @@
     addThirdNoun("ἀνήρ", "ἀνδρός ὁ", "varón; hombre", "m",
       ["ἀνήρ", "ἄνερ", "ἄνδρα", "ἀνδρός", "ἀνδρί"],
       ["ἄνδρες", "ἄνδρες", "ἄνδρας", "ἀνδρῶν", "ἀνδράσι(ν)"]);
-    addThirdNoun("γένος", "γένους τό", "raza; linaje", "n",
-      ["γένος", "γένος", "γένος", "γένους", "γένει"],
-      ["γένη", "γένη", "γένη", "γενῶν", "γένεσι(ν)"]);
-    addThirdNoun("τριήρης", "τριήρους ἡ", "trirreme", "f",
-      ["τριήρης", "τριῆρες", "τριήρη", "τριήρους", "τριήρει"],
-      ["τριήρεις", "τριήρεις", "τριήρεις", "τριήρων", "τριήρεσι(ν)"]);
-    addThirdNoun("Διογένης", "Διογένους ὁ", "Diógenes", "m",
-      ["Διογένης", "Διόγενες", "Διογένη", "Διογένους", "Διογένει"]);
-    addThirdNoun("Περικλῆς", "Περικλέους ὁ", "Pericles", "m",
-      ["Περικλῆς", "Περίκλεις", "Περικλέα", "Περικλέους", "Περικλεῖ"]);
-    addThirdNoun("κρέας", "κρέως τό", "carne", "n",
-      ["κρέας", "κρέας", "κρέας", "κρέως", "κρέᾳ"],
-      ["κρέα", "κρέα", "κρέα", "κρεῶν", "κρέασι(ν)"]);
-    addThirdNoun("βασιλεύς", "βασιλέως ὁ", "rey", "m",
-      ["βασιλεύς", "βασιλεῦ", "βασιλέα", "βασιλέως", "βασιλεῖ"],
-      ["βασιλεῖς", "βασιλεῖς", "βασιλέας", "βασιλέων", "βασιλεῦσι(ν)"]);
-    addThirdNoun("γραῦς", "γραός ἡ", "vieja", "f",
-      ["γραῦς", "γραῦ", "γραῦν", "γραός", "γραΐ"],
-      ["γραῖες", "γραῖες", "γραῦς", "γραῶν", "γραυσί(ν)"]);
-    addThirdNoun("βοῦς", "βοός ὁ", "buey", "m",
-      ["βοῦς", "βοῦ", "βοῦν", "βοός", "βοΐ"],
-      ["βόες", "βόες", "βοῦς", "βοῶν", "βουσί(ν)"]);
-    addThirdNoun("πειθώ", "πειθοῦς ἡ", "persuasión", "f",
-      ["πειθώ", "πειθοῖ", "πειθώ", "πειθοῦς", "πειθοῖ"]);
-    addThirdNoun("ἥρως", "ἥρωος ὁ", "héroe; semidiós", "m",
-      ["ἥρως", "ἥρως", "ἥρωα / ἥρω", "ἥρωος / ἥρω", "ἥρωι / ἥρῳ"],
-      ["ἥρωες / ἥρως", "ἥρωες / ἥρως", "ἥρωας / ἥρως", "ἡρώων", "ἥρωσι(ν)"]);
-    addThirdNoun("ὄϊς", "οἰός ἡ", "oveja", "f",
-      ["ὄϊς", "οἶ", "ὄϊν", "οἰός", "οἰΐ"],
-      ["οἶες", "οἶες", "οἶς", "οἰῶν", "οἰσί(ν)"]);
-    addThirdNoun("ἰχθύς", "ἰχθύος ὁ", "pez", "m",
-      ["ἰχθύς", "ἰχθύ", "ἰχθύν", "ἰχθύος", "ἰχθύϊ"],
-      ["ἰχθύες", "ἰχθύες", "ἰχθύς", "ἰχθύων", "ἰχθύσι(ν)"]);
-    addThirdNoun("πόλις", "πόλεως ἡ", "ciudad", "f",
-      ["πόλις", "πόλι", "πόλιν", "πόλεως", "πόλει"],
-      ["πόλεις", "πόλεις", "πόλεις", "πόλεων", "πόλεσι(ν)"]);
-    addThirdNoun("πῆχυς", "πήχεως ὁ", "codo", "m",
-      ["πῆχυς", "πῆχυ", "πῆχυν", "πήχεως", "πήχει"],
-      ["πήχεις", "πήχεις", "πήχεις", "πήχεων", "πήχεσι(ν)"]);
-    addThirdNoun("ἄστυ", "ἄστεως τό", "villa; ciudad", "n",
-      ["ἄστυ", "ἄστυ", "ἄστυ", "ἄστεως", "ἄστει"],
-      ["ἄστη", "ἄστη", "ἄστη", "ἄστεων", "ἄστεσι(ν)"]);
-    addThirdNoun("Ζεύς", "Διός ὁ", "Zeus; Júpiter", "m",
-      ["Ζεύς", "Ζεῦ", "Δία", "Διός", "Διί"]);
-    addThirdNoun("γυνή", "γυναικός ἡ", "mujer", "f",
-      ["γυνή", "γύναι", "γυναῖκα", "γυναικός", "γυναικί"],
-      ["γυναῖκες", "γυναῖκες", "γυναῖκας", "γυναικῶν", "γυναιξί(ν)"]);
-    addThirdNoun("κύων", "κυνός ὁ", "perro", "m",
-      ["κύων", "κύον", "κύνα", "κυνός", "κυνί"],
-      ["κύνες", "κύνες", "κύνας", "κυνῶν", "κυσί(ν)"]);
-    addThirdNoun("ναῦς", "νεώς ἡ", "nave", "f",
-      ["ναῦς", "ναῦ", "ναῦν", "νεώς", "νηΐ"],
-      ["νῆες", "νῆες", "ναῦς", "νεῶν", "ναυσί(ν)"]);
-    addThirdNoun("μάρτυς", "μάρτυρος ὁ", "testigo", "m",
-      ["μάρτυς", "μάρτυ", "μάρτυρα", "μάρτυρος", "μάρτυρι"],
-      ["μάρτυρες", "μάρτυρες", "μάρτυρας", "μαρτύρων", "μάρτυσι(ν)"]);
-    addThirdNoun("πούς", "ποδός ὁ", "pie", "m",
-      ["πούς", "πούς", "πόδα", "ποδός", "ποδί"],
-      ["πόδες", "πόδες", "πόδας", "ποδῶν", "ποσί(ν)"]);
-    addThirdNoun("νύξ", "νυκτός ἡ", "noche", "f",
-      ["νύξ", "νύξ", "νύκτα", "νυκτός", "νυκτί"],
-      ["νύκτες", "νύκτες", "νύκτας", "νυκτῶν", "νυξί(ν)"]);
-    addThirdNoun("θρίξ", "τριχός ἡ", "cabello", "f",
-      ["θρίξ", "θρίξ", "τρίχα", "τριχός", "τριχί"],
-      ["τρίχες", "τρίχες", "τρίχας", "τριχῶν", "θριξί(ν)"]);
-    addThirdNoun("γάλα", "γάλακτος τό", "leche", "n",
-      ["γάλα", "γάλα", "γάλα", "γάλακτος", "γάλακτι"],
-      ["γάλατα", "γάλατα", "γάλατα", "γαλάτων", "γάλαξι(ν)"]);
-    addThirdNoun("γόνυ", "γόνατος τό", "rodilla", "n",
-      ["γόνυ", "γόνυ", "γόνυ", "γόνατος", "γόνατι"],
-      ["γόνατα", "γόνατα", "γόνατα", "γονάτων", "γόνασι(ν)"]);
-    addThirdNoun("δόρυ", "δόρατος τό", "lanza", "n",
-      ["δόρυ", "δόρυ", "δόρυ", "δόρατος", "δόρατι"],
-      ["δόρατα", "δόρατα", "δόρατα", "δοράτων", "δόρασι(ν)"]);
     addThirdNoun("ὕδωρ", "ὕδατος τό", "agua", "n",
       ["ὕδωρ", "ὕδωρ", "ὕδωρ", "ὕδατος", "ὕδατι"],
       ["ὕδατα", "ὕδατα", "ὕδατα", "ὑδάτων", "ὕδασι(ν)"]);
-    addThirdNoun("οὖς", "ὠτός τό", "oreja", "n",
-      ["οὖς", "οὖς", "οὖς", "ὠτός", "ὠτί"],
-      ["ὦτα", "ὦτα", "ὦτα", "ὤτων", "ὠσί(ν)"]);
-    addThirdNoun("φῶς", "φωτός τό", "luz", "n",
-      ["φῶς", "φῶς", "φῶς", "φωτός", "φωτί"],
-      ["φῶτα", "φῶτα", "φῶτα", "φώτων", "φωσί(ν)"]);
-
     const GENDER_ROW_LABELS = [
       "Sing. · N/V", "Sing. · A", "Sing. · G", "Sing. · D",
       "Plur. · N/V", "Plur. · A", "Plur. · G", "Plur. · D"
@@ -731,29 +652,10 @@
       ["πᾶν", "πᾶν", "παντός", "παντί", "πάντα", "πάντα", "πάντων", "πᾶσι(ν)"]
     ));
 
-    ENTRIES.push({
-      id: "3_adj-010",
-      lemma: "ἀληθής",
-      morphology: "ἀληθές",
-      translation: "verdadero",
-      partOfSpeech: "adjetivo",
-      declension: "Tercera declinación",
-      subtype: "adjetivo de tema en -ες",
-      subtypeId: "3_adj",
-      inBasicVocab: false,
-      forms: supplementalNominalForms("m",
-        ["ἀληθής", "ἀληθές", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ"],
-        ["ἀληθεῖς", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"]),
-      table: twoGenderTable(
-        ["ἀληθής", "ἀληθές", "ἀληθῆ", "ἀληθοῦς", "ἀληθεῖ", "ἀληθεῖς", "ἀληθεῖς", "ἀληθῶν", "ἀληθέσι(ν)"],
-        ["ἀληθές", "ἀληθές", "ἀληθές", "ἀληθοῦς", "ἀληθεῖ", "ἀληθῆ", "ἀληθῆ", "ἀληθῶν", "ἀληθέσι(ν)"]
-      )
-    });
-
     const thirdNounSubtype = SUBTYPES.find(item => item.id === "3_noun");
-    thirdNounSubtype.count = thirdNounSubtype.target = 68;
+    thirdNounSubtype.count = thirdNounSubtype.target = 40;
     const thirdAdjectiveSubtype = SUBTYPES.find(item => item.id === "3_adj");
-    thirdAdjectiveSubtype.count = thirdAdjectiveSubtype.target = 10;
+    thirdAdjectiveSubtype.count = thirdAdjectiveSubtype.target = 9;
 
     const SUPPLEMENTAL_SUBTYPES = [
       {
@@ -60390,6 +60292,6 @@
     buildWordList();
     renderEntry(randomEntry());
   </script>
-  <!-- entry-counts: 1f_alpha_pure=111, 1f_alpha_impure=36, 1f_eta=104, 1m_eta=69, 1m_alpha=4, 1f_contract=1, 2m_os=127, 2f_os=53, 2n_on=73, 2_common_os=4, 2_adj_thematic=139, 2_adj_contract=1, 2_attic_mf=8, 2_contract=2, verb_present=166, 3_noun=68, 3_adj=10, verb_imperfect_active=12, verb_present_middle=9, verb_imperfect_middle=8, verb_aorist_sigmatic_active=11, verb_aorist_sigmatic_middle=1, verb_aorist_radical_active=6, verb_aorist_radical_middle=1, verb_aorist_eta_theta=2, infinitive_present=11, participle_present=19, participle_future=1, participle_aorist=5 -->
+  <!-- entry-counts: 1f_alpha_pure=111, 1f_alpha_impure=36, 1f_eta=104, 1m_eta=69, 1m_alpha=4, 1f_contract=1, 2m_os=127, 2f_os=53, 2n_on=73, 2_common_os=4, 2_adj_thematic=139, 2_adj_contract=1, 2_attic_mf=8, 2_contract=2, verb_present=166, 3_noun=40, 3_adj=9, verb_imperfect_active=12, verb_present_middle=9, verb_imperfect_middle=8, verb_aorist_sigmatic_active=11, verb_aorist_sigmatic_middle=1, verb_aorist_radical_active=6, verb_aorist_radical_middle=1, verb_aorist_eta_theta=2, infinitive_present=11, participle_present=19, participle_future=1, participle_aorist=5 -->
 </body>
 </html>
