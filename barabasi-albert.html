@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barabási–Albert · Crecimiento de redes</title>
+<meta name="description" content="Simulación local de conexión preferencial con exponente ajustable, hasta 2000 nodos.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 16L5 5M16 16L27 8M16 16L8 27M16 16L27 26' stroke='%23007878' stroke-width='2'/%3E%3Cg fill='%23007878'%3E%3Ccircle cx='16' cy='16' r='6'/%3E%3Ccircle cx='5' cy='5' r='3'/%3E%3Ccircle cx='27' cy='8' r='3'/%3E%3Ccircle cx='8' cy='27' r='3'/%3E%3Ccircle cx='27' cy='26' r='3'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+:root{font-family:system-ui,Segoe UI,sans-serif;color:#172f41;background:#edf2f6;color-scheme:light;font-size:16px}*{box-sizing:border-box}body{margin:0}main{max-width:1500px;margin:auto;padding:28px}h1{font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.035em;margin:4px 0 8px}h2{font-size:1.05rem;margin:0}.eyebrow{color:#006f70;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}header p{color:#516677;margin:0;line-height:1.5}.controls{display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin:22px 0 14px}label{display:grid;gap:6px;font-size:.875rem;font-weight:600}input,select,button{font:inherit;min-height:44px;padding:10px 12px;border:1px solid #adbdc9;border-radius:8px;color:#172f41;background:white}input{width:100px}button{cursor:pointer;font-weight:600}button:hover:not(:disabled){background:#deebef}button.primary{background:#006f70;color:white;border-color:#006f70}button.primary:hover:not(:disabled){background:#00585b}button:disabled{opacity:.45;cursor:default}:focus-visible{outline:3px solid #d87714;outline-offset:3px}.actions{display:flex;gap:8px;flex-wrap:wrap}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.metric{padding:14px 18px;background:white;border-radius:10px}.metric span,.metric small{color:#516677;font-size:.875rem}.metric strong{display:block;font-size:1.8rem;font-variant-numeric:tabular-nums;margin:4px 0}.panels{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}.panel{background:white;border-radius:12px;padding:20px;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;min-height:48px}.zoom{display:flex;gap:5px}.zoom button{padding:4px 12px}.network-wrap{height:500px;position:relative;background:#f9fbfc;border-radius:8px;margin-top:12px;overflow:hidden}canvas{display:block;width:100%;height:100%}#network{touch-action:none;cursor:grab}#network:active{cursor:grabbing}.chart-wrap{height:390px;margin-top:12px}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:#42586a;margin:12px 0}.legend span{display:flex;align-items:center;gap:6px}.dot{display:inline-block;width:10px;height:10px;background:#007d80;border-radius:50%}.dot.hub{background:#7545ab}.dot.new{background:#c56108}.dash{width:23px;border-top:2px dashed #7545ab}.hint{font-size:.875rem;line-height:1.5;color:#42586a;margin:10px 0}.inspector{font-size:.875rem;min-height:3em;line-height:1.5}.progress{height:5px;background:#dce5eb;border-radius:5px;overflow:hidden;margin-top:20px}.progress div{height:100%;width:0;background:#007d80}#status,#setup{font-size:.875rem;color:#42586a;line-height:1.6}#error{color:#a42b21}.notes{margin-top:20px;color:#42586a;font-size:.875rem;line-height:1.65}.notes p{margin:8px 0}summary{font-weight:600;cursor:pointer;min-height:32px}a{color:#006f70}.hist-note{margin-top:16px;border-left:3px solid #dce5eb;padding-left:14px}@media(max-width:1000px){.panels{grid-template-columns:1fr}.network-wrap{height:480px}}@media(max-width:540px){main{padding:16px}.metrics{grid-template-columns:repeat(2,1fr)}.panel{padding:12px}.network-wrap{height:380px}.chart-wrap{height:340px}.controls{gap:10px}.metric{padding:12px}.metric strong{font-size:1.5rem}}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">Laboratorio de redes · Conexión preferencial</div><h1>Barabási–Albert</h1><p>Observa cómo crecen los hubs al incorporar nuevos nodos. Ajusta γ para explorar distintas distribuciones de grado.</p></header>
+<div class="controls">
+<label>Nodos finales N<input id="nodes" type="number" min="10" max="2000" step="1" value="100"></label>
+<label>Aristas por nodo m<input id="links" type="number" min="1" max="10" step="1" value="2"></label>
+<label>Exponente γ<input id="gamma" type="number" min="2.1" max="5" step="0.1" value="3"></label>
+<label>Intervalo<select id="interval"><option value="1000">1 s</option><option value="900">0,9 s</option><option value="800">0,8 s</option><option value="700">0,7 s</option><option value="600">0,6 s</option><option value="500">0,5 s</option><option value="400">0,4 s</option><option value="300">0,3 s</option><option value="200">0,2 s</option><option value="100" selected>0,1 s</option></select></label>
+<label>Nodos por paso<select id="batch"><option value="1">1 nodo</option><option value="5">5 nodos</option><option value="10">10 nodos</option><option value="25">25 nodos</option></select></label>
+<div class="actions"><button id="play" class="primary">Iniciar</button><button id="step">Un paso</button><button id="reset">Reiniciar</button></div>
+</div><div id="error" role="alert"></div><p id="setup"></p>
+<div class="metrics">
+<div class="metric"><span>Nodos presentes</span><strong id="nodeValue"></strong><small id="targetValue"></small></div>
+<div class="metric"><span>Aristas presentes</span><strong id="edgeValue"></strong><small id="edgeTotal"></small></div>
+<div class="metric"><span>Grado medio ⟨k⟩</span><strong id="degreeValue"></strong><small>2 × aristas / nodos</small></div>
+<div class="metric"><span>Mayor grado</span><strong id="hubValue"></strong><small id="hubLabel"></small></div>
+</div>
+<div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+<div class="metric"><span>Clustering medio</span><strong id="clusteringValue"></strong><small>Media sobre todos los nodos · 0 a 1</small></div>
+<div class="metric"><span>Máximo k con núcleo</span><strong id="maxCoreValue"></strong><small>Mayor k-core no vacío</small></div>
+<div class="metric"><span id="coreLabel">Tamaño del núcleo</span><strong id="coreValue"></strong><small id="coreCount"></small></div>
+</div>
+<div class="panels">
+<section class="panel"><div class="panel-head"><h2>La red en crecimiento</h2><div class="zoom"><button id="zoomOut" aria-label="Alejar">−</button><button id="zoomIn" aria-label="Acercar">+</button><button id="fit">Ajustar vista</button></div></div>
+<div class="network-wrap"><canvas id="network" tabindex="0" role="img" aria-label="Red de conexión preferencial. Usa los botones para ampliar y haz clic en un nodo para inspeccionarlo."></canvas></div>
+<div class="legend"><span><i class="dot"></i>Nodos · tamaño según grado</span><span><i class="dot hub"></i>5 mayores hubs</span><span><i class="dot new"></i>Nuevos nodos y aristas</span></div>
+<p class="hint">Rueda o botones para ampliar; arrastra para desplazar. Haz clic en un nodo para destacar sus conexiones; pulsa Esc para quitar la selección.</p><div id="inspector" class="inspector" aria-live="polite">Selecciona un nodo para consultar su grado y su peso de conexión.</div>
+</section>
+<section class="panel"><div class="panel-head"><h2>Distribución de grados</h2><span class="hint">Escalas logarítmicas</span></div><div class="chart-wrap"><canvas id="distribution" role="img" aria-label="Fracción de nodos con grado k en escala logarítmica"></canvas></div>
+<div class="legend"><span><i class="dot"></i>Frecuencia observada P(k)</span><span><i class="dash"></i><span id="slopeLabel">Guía de pendiente −γ</span></span></div>
+<p id="chartDetail" class="hint"></p><p class="hint hist-note">La recta discontinua solo ayuda a comparar pendientes; no es un ajuste a los datos. La ley de potencias describe la cola de la distribución en redes grandes. Con pocos nodos, o γ próximo a 2, las fluctuaciones y los efectos de tamaño finito son importantes.</p>
+</section>
+</div>
+<div class="panels" style="margin-top:18px">
+<section class="panel"><h2>Clustering medio</h2><div class="chart-wrap" style="height:300px"><canvas id="clusteringChart" role="img" aria-label="Clustering medio frente al grado medio, de 0 a 10"></canvas></div></section>
+<section class="panel"><h2 id="coreChartTitle">Máximo k con núcleo no vacío</h2><div class="chart-wrap" style="height:300px"><canvas id="coreChart" role="img" aria-label="Máximo k con núcleo no vacío frente al grado medio, de 0 a 10"></canvas></div></section>
+</div>
+<p class="hint">Estos dos gráficos usan las mismas escalas que la aplicación de la componente gigante: grado medio de 0 a 10, clustering de 0 a 1 y k-core con marcas enteras. En Barabási–Albert el grado medio tiende a 2m; para m &gt; 5, parte de la evolución queda fuera de la ventana.</p><div class="progress" role="progressbar" aria-label="Crecimiento de la red" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div>
+<p id="status" role="status" aria-live="polite"></p>
+<details class="notes"><summary>Cómo se genera esta red</summary>
+<p>La semilla es un grafo completo de m + 1 nodos, cada uno con grado m. Cada nuevo nodo elige m nodos existentes distintos, sin bucles ni aristas repetidas. En cada elección, el peso de un candidato es k + a, donde k es su grado y a = m(γ − 3). Los destinos ya elegidos se excluyen de las elecciones restantes de ese nuevo nodo.</p>
+<p>Con γ = 3, a = 0 y se recupera la conexión preferencial clásica de Barabási–Albert. Para γ distinto de 3 se usa la variante con atractivo inicial. γ es el exponente asintótico objetivo, no una pendiente garantizada en una realización finita. El intervalo γ &gt; 2 mantiene positivos todos los pesos porque cada nodo nace con grado m.</p>
+<p>Las posiciones son fijas y no intervienen en la probabilidad de conexión: las distancias dibujadas no representan una propiedad del modelo. Se dibujan todos los nodos y aristas; al crecer la red se reduce el grosor de las líneas. Los hubs se identifican por grado, con desempate por antigüedad. Si no hay al menos 6 nodos se omite el resaltado de hubs.</p>
+<p>Cambiar N, m o γ reinicia la simulación. Cambiar el intervalo o el número de nodos por paso conserva la red. Reiniciar produce una nueva realización aleatoria.</p>
+<p>El clustering es la media de los coeficientes locales sobre todos los nodos; los nodos de grado 0 o 1 aportan 0, igual que en la otra aplicación. El máximo k-core es siempre m y contiene toda la red: el grado mínimo es m, y al eliminar los nodos en orden inverso a su llegada ninguno conserva más de m vecinos anteriores. Por tanto, la curva horizontal del k-core es una propiedad de este modelo, independiente de γ.</p><p>Referencia: <a href="https://arxiv.org/abs/0705.4151" target="_blank" rel="noopener noreferrer">Deijfen y colaboradores: conexión preferencial con atractivo inicial</a>.</p>
+</details>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id),format=(v,d=0)=>v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+// Exact triangle counts updated once per inserted edge; packed adjacency saves memory.
+class NetworkMetrics {
+ constructor(capacity){this.words=Math.ceil(capacity/32);this.adj=Array.from({length:capacity},()=>new Uint32Array(this.words));this.degree=new Uint32Array(capacity);this.triangles=new Float64Array(capacity);}
+ add(a,b){const A=this.adj[a],B=this.adj[b];let common=0;for(let q=0;q<this.words;q++){let bits=(A[q]&B[q])>>>0;while(bits){const bit=31-Math.clz32(bits&-bits);this.triangles[q*32+bit]++;common++;bits=(bits&(bits-1))>>>0;}}this.triangles[a]+=common;this.triangles[b]+=common;A[b>>>5]|=1<<(b&31);B[a>>>5]|=1<<(a&31);this.degree[a]++;this.degree[b]++;}
+ sample(count){
+  let clustering=0;for(let v=0;v<count;v++){const d=this.degree[v];if(d>1)clustering+=2*this.triangles[v]/(d*(d-1));}
+  // Bucket core decomposition: O(vertices + edges), with bitset neighbor traversal.
+  const cores=Array.from(this.degree.subarray(0,count)),bin=new Uint32Array(count+1),pos=new Uint32Array(count),vert=new Uint32Array(count);
+  for(const d of cores)bin[d]++;let start=0;for(let d=0;d<=count;d++){const size=bin[d];bin[d]=start;start+=size;}
+  for(let v=0;v<count;v++){pos[v]=bin[cores[v]];vert[pos[v]]=v;bin[cores[v]]++;}for(let d=count;d>0;d--)bin[d]=bin[d-1];bin[0]=0;
+  for(let i=0;i<count;i++){const v=vert[i],row=this.adj[v];for(let q=0;q<this.words;q++){let bits=row[q]>>>0;while(bits){const u=q*32+31-Math.clz32(bits&-bits);bits=(bits&(bits-1))>>>0;if(cores[u]>cores[v]){const du=cores[u],pu=pos[u],pw=bin[du],w=vert[pw];if(u!==w){vert[pu]=w;vert[pw]=u;pos[u]=pw;pos[w]=pu;}bin[du]++;cores[u]--;}}}}
+  return {clustering:clustering/count,cores,maxCore:Math.max(...cores)};
+ }
+}
+
+// No external dependencies. The generative model is separate from drawing.
+class PreferentialNetwork{
+ constructor(target,m,gamma,rng=Math.random){
+  this.target=target;this.m=m;this.gamma=gamma;this.a=m*(gamma-3);this.rng=rng;this.degree=Array(m+1).fill(m);this.metrics=new NetworkMetrics(target);this.history=[];this.edges=[];this.latest=[];this.newStart=m+1;
+  for(let i=0;i<=m;i++)for(let j=i+1;j<=m;j++){this.edges.push([i,j]);this.metrics.add(i,j);}this.record();
+ }
+ add(){
+  const v=this.degree.length;if(v>=this.target)return false;
+  const chosen=new Set();let weight=0;for(let i=0;i<v;i++)weight+=this.degree[i]+this.a;
+  for(let e=0;e<this.m;e++){
+   let r=this.rng()*weight,pick=-1;
+   for(let i=0;i<v;i++){if(chosen.has(i))continue;pick=i;r-=this.degree[i]+this.a;if(r<0)break;}
+   chosen.add(pick);weight-=this.degree[pick]+this.a;
+  }
+  this.degree.push(this.m);for(const u of chosen){this.degree[u]++;this.metrics.add(u,v);const edge=[u,v];this.edges.push(edge);this.latest.push(edge);}return true;
+ }
+ record(){this.current=this.metrics.sample(this.degree.length);const p={x:2*this.edges.length/this.degree.length,clustering:this.current.clustering,maxCore:this.current.maxCore};if(!this.history.length||this.history[this.history.length-1].x<=10)this.history.push(p);}
+ advance(count){this.latest=[];this.newStart=this.degree.length;for(let i=0;i<count;i++)if(!this.add())break;this.record();}
+}
+let graph,running=false,timer=null,selected=-1,zoom=1,panX=0,panY=0,positions=[],hubIds=[],drag=null;
+const colors={node:'#007d80',hub:'#7545ab',fresh:'#c56108',text:'#42586a',grid:'#e1e8ed'};
+function readConfig(){
+ const target=Number($('nodes').value),m=Number($('links').value),gamma=Number($('gamma').value);
+ if(!Number.isInteger(target)||target<10||target>2000)return {error:'N debe ser un entero entre 10 y 2000.'};
+ if(!Number.isInteger(m)||m<1||m>10||m>=target)return {error:'m debe ser un entero entre 1 y 10, menor que N.'};
+ if(!Number.isFinite(gamma)||gamma<2.1||gamma>5)return {error:'γ debe estar entre 2,1 y 5.'};
+ return {target,m,gamma};
+}
+function stop(){running=false;clearTimeout(timer);timer=null;}
+function reset(){
+ stop();const p=readConfig();$('error').textContent=p.error||'';
+ if(p.error){$('play').disabled=true;$('step').disabled=true;$('play').textContent='Iniciar';return;}
+ graph=new PreferentialNetwork(p.target,p.m,p.gamma);selected=-1;zoom=1;panX=panY=0;
+ // Low-discrepancy fixed disk positions, independent of the attachment choices.
+ positions=Array.from({length:p.target},(_,i)=>{if(!i)return {x:0,y:0};let t=i,u=0,f=.5;while(t){u+=(t%2)*f;t=Math.floor(t/2);f/=2;}const r=.44*Math.sqrt(u),angle=i*Math.PI*(3-Math.sqrt(5));return {x:r*Math.cos(angle),y:r*Math.sin(angle)};});render();
+}
+function advance(){if(!graph||graph.degree.length===graph.target)return;graph.advance(Number($('batch').value));if(graph.degree.length===graph.target)stop();render();}
+function schedule(){timer=setTimeout(()=>{if(!running)return;advance();if(running)schedule();},Number($('interval').value));}
+function surface(id){const canvas=$(id),rect=canvas.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(rect.width*d);canvas.height=Math.round(rect.height*d);const c=canvas.getContext('2d');c.scale(d,d);return {c,w:rect.width,h:rect.height};}
+function point(i,w,h){const p=positions[i],side=Math.min(w,h);return {x:w/2+panX+p.x*side*zoom,y:h/2+panY+p.y*side*zoom};}
+function radius(i){return (graph.degree.length>500?1.4:2.6)+Math.min(10,Math.sqrt(graph.degree[i])*1.15);}
+function drawNetwork(){
+ if(!graph)return;const {c,w,h}=surface('network'),n=graph.degree.length,coords=positions.slice(0,n).map((_,i)=>point(i,w,h)),hubs=new Set(hubIds),neighbors=new Set();
+ if(selected>=0){neighbors.add(selected);for(const [a,b] of graph.edges){if(a===selected)neighbors.add(b);if(b===selected)neighbors.add(a);}}
+ function lines(edges,color,width,filter){c.strokeStyle=color;c.lineWidth=width;c.beginPath();for(const [a,b] of edges){if(filter&&!filter(a,b))continue;c.moveTo(coords[a].x,coords[a].y);c.lineTo(coords[b].x,coords[b].y);}c.stroke();}
+ lines(graph.edges,selected>=0?'rgba(78,100,122,.10)':n>500?'rgba(62,103,121,.24)':'rgba(62,103,121,.50)',n>500?.65:1);
+ if(selected<0)lines(graph.latest,'rgba(197,97,8,.85)',1.5);else lines(graph.edges,'rgba(0,105,110,.85)',1.7,(a,b)=>a===selected||b===selected);
+ const order=Array.from({length:n},(_,i)=>i).sort((a,b)=>graph.degree[a]-graph.degree[b]);
+ for(const i of order){const p=coords[i],r=radius(i);if(p.x+r<0||p.y+r<0||p.x-r>w||p.y-r>h)continue;c.globalAlpha=selected>=0&&!neighbors.has(i)?.22:1;c.fillStyle=i>=graph.newStart?colors.fresh:hubs.has(i)?colors.hub:colors.node;c.beginPath();c.arc(p.x,p.y,r,0,2*Math.PI);c.fill();c.strokeStyle='#fff';c.lineWidth=n>500?.4:1;c.stroke();if(i===selected){c.beginPath();c.arc(p.x,p.y,r+4,0,2*Math.PI);c.strokeStyle='#172f41';c.lineWidth=2;c.stroke();}}
+ c.globalAlpha=1;c.font='12px system-ui';c.textAlign='center';c.fillStyle='#172f41';for(const i of selected>=0?[selected]:hubIds.slice(0,3)){const p=coords[i];c.fillText('#'+(i+1),p.x,p.y-radius(i)-6);}
+ $('network').setAttribute('aria-label',`Red de ${n} nodos y ${graph.edges.length} aristas. Mayor grado: ${Math.max(...graph.degree)}. Selecciona un nodo con el ratón para inspeccionarlo.`);
+ if(selected<0)$('inspector').textContent='Selecciona un nodo para consultar su grado y su peso de conexión.';
+ else $('inspector').textContent=`Nodo #${selected+1} · grado ${graph.degree[selected]} · peso k + a = ${format(graph.degree[selected]+graph.a,2)}. Se destacan sus ${graph.degree[selected]} vecinos.`;
+}
+function drawDistribution(){
+ const {c,w,h}=surface('distribution'),left=58,right=18,top=30,bottom=54,pw=w-left-right,ph=h-top-bottom,n=graph.degree.length;
+ const hist=new Map();for(const k of graph.degree)hist.set(k,(hist.get(k)||0)+1);
+ const maxK=Math.max(...hist.keys()),xMax=10**Math.ceil(Math.log10(Math.max(10,maxK))),yMin=10**Math.floor(Math.log10(1/graph.target));
+ const x=k=>left+Math.log10(k)/Math.log10(xMax)*pw,y=p=>top+Math.log10(1/p)/Math.log10(1/yMin)*ph;
+ c.font='12px system-ui';c.lineWidth=1;
+ for(let e=Math.round(Math.log10(yMin));e<=0;e++){const p=10**e;c.strokeStyle=colors.grid;c.beginPath();c.moveTo(left,y(p));c.lineTo(w-right,y(p));c.stroke();c.textAlign='right';c.fillStyle=colors.text;c.fillText(p.toLocaleString('es-ES',{maximumFractionDigits:5}),left-8,y(p)+4);}
+ for(let e=0;e<=Math.log10(xMax);e++){const k=10**e;c.strokeStyle=colors.grid;c.beginPath();c.moveTo(x(k),top);c.lineTo(x(k),h-bottom);c.stroke();c.fillStyle=colors.text;c.textAlign='center';c.fillText(format(k),x(k),h-bottom+22);}
+ c.fillStyle=colors.text;c.textAlign='left';c.fillText('P(k) · fracción de nodos',left,16);c.textAlign='center';c.fillText('Grado k',left+pw/2,h-10);
+ c.save();c.beginPath();c.rect(left-4,top-4,pw+8,ph+8);c.clip();
+ const anchor=graph.m,anchorP=(hist.get(anchor)||1)/n;
+ c.strokeStyle=colors.hub;c.lineWidth=2;c.setLineDash([6,5]);c.beginPath();c.moveTo(x(anchor),y(anchorP));c.lineTo(x(xMax),y(anchorP*(xMax/anchor)**(-graph.gamma)));c.stroke();c.setLineDash([]);
+ c.fillStyle=colors.node;for(const [k,count] of hist){c.beginPath();c.arc(x(k),y(count/n),4,0,2*Math.PI);c.fill();}c.restore();
+ $('slopeLabel').textContent='Guía de pendiente −'+format(graph.gamma,1);$('chartDetail').textContent=`${hist.size} grados distintos observados, entre ${Math.min(...hist.keys())} y ${maxK}. Cada punto representa la fracción de nodos con ese grado; los grados sin nodos no se dibujan.`;
+ $('distribution').setAttribute('aria-label',`Distribución de grados de ${n} nodos: ${[...hist].sort((a,b)=>a[0]-b[0]).map(([k,count])=>`grado ${k}: ${count} nodos`).join('; ')}. Guía de pendiente menos ${graph.gamma}, no ajustada a los datos.`);
+}
+function drawStructureChart(id,core){
+ const history=graph.history;
+ const {c,w,h}=surface(id),left=52,right=18,top=30,bottom=52,pw=w-left-right,ph=h-top-bottom;
+ const visibleMax=Math.max(0,...history.filter(p=>p.x<=10).map(p=>p.maxCore));
+ const tickStep=core?Math.max(2,Math.ceil(visibleMax/5)):.2,axisMax=tickStep*5;
+ const x=v=>left+v/10*pw,y=v=>top+(1-v/axisMax)*ph,value=p=>core?p.maxCore:p.clustering;
+ c.font='12px system-ui';for(let i=0;i<=5;i++){const v=i*tickStep;c.strokeStyle='#e1e8ed';c.lineWidth=1;c.beginPath();c.moveTo(left,y(v));c.lineTo(w-right,y(v));c.stroke();c.fillStyle='#516677';c.textAlign='right';c.fillText(core?format(v):format(v,1),left-8,y(v)+4);c.textAlign='center';c.fillText(i*2,x(i*2),h-bottom+22);}
+ c.fillStyle='#42586a';c.textAlign='left';c.fillText(core?'Máximo k':'Coeficiente medio (0–1)',left,16);c.textAlign='center';c.fillText('Grado medio ⟨k⟩',left+pw/2,h-8);
+ c.setLineDash([5,5]);c.strokeStyle='#879bab';c.beginPath();c.moveTo(x(1),top);c.lineTo(x(1),h-bottom);c.stroke();c.setLineDash([]);
+ c.save();c.beginPath();c.rect(left,top-3,pw,ph+6);c.clip();c.strokeStyle=core?'#7545ab':'#2062ac';c.fillStyle=c.strokeStyle;c.lineWidth=2.5;c.beginPath();
+ for(let i=0;i<history.length;i++){const p=history[i];if(core&&p.x>10)break;if(i)c.lineTo(x(p.x),y(value(p)));else c.moveTo(x(p.x),y(value(p)));if(p.x>10)break;}c.stroke();
+ for(const p of history){if(p.x>10)break;c.beginPath();c.arc(x(p.x),y(value(p)),3,0,Math.PI*2);c.fill();}c.restore();
+}
+
+function render(){
+ const n=graph.degree.length,seed=graph.m+1,totalEdges=graph.m*(graph.m+1)/2+graph.m*(graph.target-seed),complete=n===graph.target;
+ hubIds=n>5?Array.from({length:n},(_,i)=>i).sort((a,b)=>graph.degree[b]-graph.degree[a]||a-b).slice(0,5):[];
+ const best=graph.degree.indexOf(Math.max(...graph.degree));$('nodeValue').textContent=format(n);$('targetValue').textContent='de '+format(graph.target)+' previstos';$('edgeValue').textContent=format(graph.edges.length);$('edgeTotal').textContent='de '+format(totalEdges)+' al terminar';$('degreeValue').textContent=format(2*graph.edges.length/n,2);$('hubValue').textContent=graph.degree[best];$('hubLabel').textContent='Nodo #'+(best+1);
+ const invalid=!!readConfig().error;$('play').disabled=complete||invalid;$('step').disabled=complete||running||invalid;$('play').textContent=running?'Pausar':complete?'Completado':n===seed?'Iniciar':'Continuar';
+ const progress=graph.target===seed?100:100*(n-seed)/(graph.target-seed);$('bar').style.width=progress+'%';$('bar').parentElement.setAttribute('aria-valuenow',progress);
+ const seconds=Math.ceil((graph.target-n)/Number($('batch').value))*Number($('interval').value)/1000;
+ $('setup').textContent=`${graph.gamma===3?'Modelo clásico':'Variante con atractivo inicial'} · γ = ${format(graph.gamma,1)} · a = ${format(graph.a,2)} · semilla: ${seed} nodos conectados entre sí. Cambiar N, m o γ reinicia la red.`;
+ $('status').textContent=(complete?'Red completa.':running?'En marcha.':n===seed?'Semilla preparada.':'En pausa.')+` Último paso: ${graph.latest.length/graph.m} nodos y ${graph.latest.length} aristas nuevas.`+(complete?'':` Tiempo restante aproximado: ${format(seconds,1)} s, más el dibujo.`);
+ const p=graph.current;const count=p.cores.filter(k=>k>=p.maxCore).length;$('clusteringValue').textContent=format(p.clustering,4);$('maxCoreValue').textContent=p.maxCore;$('coreLabel').textContent='Tamaño del '+p.maxCore+'-core';$('coreValue').textContent=format(100*count/n,1)+' %';$('coreCount').textContent=count+' de '+n+' vértices';
+ drawNetwork();drawDistribution();drawStructureChart('clusteringChart',false);drawStructureChart('coreChart',true);
+}
+$('play').onclick=()=>{if(readConfig().error){reset();return;}if(running){stop();render();return;}running=true;render();schedule();};$('step').onclick=advance;$('reset').onclick=reset;
+for(const id of ['nodes','links','gamma'])$(id).onchange=reset;
+for(const id of ['batch','interval'])$(id).onchange=()=>{if(!graph)return;if(running){clearTimeout(timer);schedule();}render();};
+function changeZoom(factor){const z=Math.max(.7,Math.min(8,zoom*factor)),ratio=z/zoom;panX*=ratio;panY*=ratio;zoom=z;drawNetwork();}
+$('zoomIn').onclick=()=>changeZoom(1.4);$('zoomOut').onclick=()=>changeZoom(1/1.4);$('fit').onclick=()=>{zoom=1;panX=panY=0;selected=-1;drawNetwork();};
+$('network').addEventListener('wheel',e=>{e.preventDefault();changeZoom(e.deltaY<0?1.15:1/1.15);},{passive:false});
+$('network').addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false};$('network').setPointerCapture(e.pointerId);});
+$('network').addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>4)drag.moved=true;if(drag.moved){panX=drag.px+dx;panY=drag.py+dy;drawNetwork();}});
+$('network').addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const r=$('network').getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=-1,dist=Infinity;for(let i=0;i<graph.degree.length;i++){const p=point(i,r.width,r.height),d=Math.hypot(p.x-x,p.y-y);if(d<radius(i)+5&&d<dist){dist=d;best=i;}}selected=selected===best?-1:best;drawNetwork();}drag=null;});
+$('network').addEventListener('pointercancel',()=>drag=null);$('network').addEventListener('keydown',e=>{if(e.key==='Escape'){selected=-1;drawNetwork();}});
+new ResizeObserver(()=>{if(graph){drawNetwork();drawDistribution();drawStructureChart('clusteringChart',false);drawStructureChart('coreChart',true);}}).observe(document.querySelector('.panels'));reset();
+</script></body></html>
